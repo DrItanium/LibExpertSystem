@@ -1,0 +1,4 @@
+This library is an interface from LLVM to CLIPS
+
+The code associated with this library needs to be put under the lib folder in
+an LLVM compilation.
