@@ -1,4 +1,10 @@
 This library is an interface from LLVM to CLIPS
 
-The code associated with this library needs to be put under the lib folder in
-an LLVM compilation.
+This library contains the source code from CLIPS which is located at
+clipsrules.sourceforge.net
+
+1) Go into the lib folder of the LLVM source code. 
+2) do a git clone into a folder named ExpertSystem
+3) Go into the ExpertSystem folder
+4) run make
+5) Done!
