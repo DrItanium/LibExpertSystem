@@ -1,3 +1,8 @@
+/* This pass is meant to show how one uses the Knowledge Construction Engine
+ * (KCE). It's pretty simple. Running this pass requires a lot more work and
+ * I'm...heh....working on that. 
+ * - Joshua Scoggins (8/12/2012)
+ */
 #include "llvm/Pass.h"
 #include "llvm/Function.h"
 #include "llvm/Analysis/LoopInfo.h"
