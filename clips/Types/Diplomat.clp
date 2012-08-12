@@ -1,6 +1,7 @@
 (defclass Diplomat 
  "A Diplomat is a collection of fields that interact with other
- objects."
+ objects. The name comes from an old idea I tried to implement during
+ implementing wavefront scheduling."
  (is-a LLVMObject)
  (slot IsOpen (type SYMBOL) (visibility public) 
 	(allowed-values FALSE TRUE))
@@ -12,9 +13,9 @@
  (multislot NextPathElements (visibility public))
  (multislot Consumes)
  (multislot Produces)
+ (multislot Paths (visibility public)))
  ;(multislot Chokes (visibility public))
  ;(multislot ChokedBy (visibility public))
- (multislot Paths (visibility public)))
  ;(multislot RegionalAllies (visibility public))
  ;(multislot FunctionalAllies (visibility public)))
 
