@@ -1,4 +1,8 @@
-(defclass List (is-a TaggedObject)
+(defclass List (is-a TaggedObject) 
+ "An ancient class that is a remnant of when I tried to apply procedural
+ aspects to expert system programming...what a dumb idea. Oh well I leave it
+ here for legacy purposes. I will warn any who use this class that message
+ passing is EXTREMELY slow for compiler optimizations."
  (slot Length (type NUMBER) (default-dynamic 0))
  (multislot Contents (visibility public)))
 
