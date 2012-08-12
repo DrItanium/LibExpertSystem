@@ -41,13 +41,10 @@
 (defclass Path (is-a Hint)
  (slot ExitBlock (type SYMBOL))
  (slot Closed (type SYMBOL) (allowed-values FALSE TRUE)))
-; (multislot BackEdgesVisited))
 
 (defmessage-handler Path init after ()
  (bind ?self:Type Path))
 
-;(defmessage-handler Path .AddBackEdge (?be)
-; (bind ?self:BackEdgesVisited (create$ ?self:BackEdgesVisited ?be)))
 ;------------------------------------------------------------------------------
 (defclass Hierarchy (is-a Hint))
 
