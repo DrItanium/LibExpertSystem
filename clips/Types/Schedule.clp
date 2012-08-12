@@ -1,0 +1,12 @@
+(defclass Schedule (is-a TaggedObject)
+ (multislot Contents (visibility public))
+ (multislot Scheduled (visibility public))
+ (multislot Success (visibility public)) 
+ (multislot Failure (visibility public))
+ (multislot Groups (visibility public))
+ (slot TimeGenerator (type NUMBER) (default-dynamic 0)))
+
+(defmessage-handler Schedule .ScheduledContainsSubset (?a)
+ (subsetp (create$ ?a) ?self:Scheduled))
+(defmessage-handler Schedule .AddScheduledInstruction (?i)
+ (bind ?self:Scheduled (create$ ?self:Scheduled ?i)))

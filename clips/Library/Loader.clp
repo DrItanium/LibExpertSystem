@@ -1,0 +1,7 @@
+(load* "Library/lisp.clp")
+(load* "Library/LLVM.clp")
+(load* "Library/ObjectQueryExtensions.clp")
+(load* "Library/StringExtensions.clp")
+(load* "Library/ContentAnalysisExtensions.clp")
+(load* "Library/SetExtensions.clp")
+(load* "Library/Conversion.clp")

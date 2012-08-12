@@ -1,0 +1,5 @@
+(defclass Region (is-a MultiBlockContainer)
+ (slot CanWavefrontSchedule (type SYMBOL) (allowed-values FALSE TRUE))
+ (slot IsSimple (type SYMBOL) (allowed-values FALSE TRUE))
+ (slot Depth (type NUMBER) (range 0 ?VARIABLE))
+ (slot IsTopLevelRegion (type SYMBOL) (allowed-values FALSE TRUE)))

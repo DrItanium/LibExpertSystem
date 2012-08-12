@@ -1,0 +1,6 @@
+(defclass LLVMMDNode (is-a LLVMValue)
+ (multislot Operands)
+ (slot IsFunctionLocal (type SYMBOL) (allowed-values FALSE TRUE))
+ (slot TargetFunction (type SYMBOL)))
+(defclass LLVMMDString (is-a LLVMValue)
+ (slot String (type STRING)))
