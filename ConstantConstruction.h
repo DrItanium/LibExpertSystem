@@ -5,37 +5,37 @@ using namespace llvm;
 class CLIPSConstantBuilder : public CLIPSUserBuilder {
    public:
       CLIPSConstantBuilder(std::string nm, std::string ty, FunctionNamer& namer) : CLIPSUserBuilder(nm, ty, namer) { }
-      void addFields(Constant* cnst, char* parent) {
-         CLIPSUserBuilder::addFields((User*)cnst, parent);
-         if(cnst->isNullValue()) addTrueField("IsNullValue"); 
-         if(cnst->isAllOnesValue()) addTrueField("IsAllOnesValue"); 
-         if(cnst->isNegativeZeroValue()) addTrueField("IsNegativeZeroValue"); 
-         if(cnst->canTrap()) addTrueField("CanTrap"); 
-         if(cnst->isConstantUsed()) addTrueField("IsConstantUsed"); 
+      void setFields(Constant* cnst, char* parent) {
+         CLIPSUserBuilder::setFields((User*)cnst, parent);
+         if(cnst->isNullValue()) setFieldTrue("IsNullValue"); 
+         if(cnst->isAllOnesValue()) setFieldTrue("IsAllOnesValue"); 
+         if(cnst->isNegativeZeroValue()) setFieldTrue("IsNegativeZeroValue"); 
+         if(cnst->canTrap()) setFieldTrue("CanTrap"); 
+         if(cnst->isConstantUsed()) setFieldTrue("IsConstantUsed"); 
       }
 };
 
 class CLIPSBlockAddressBuilder : public CLIPSConstantBuilder {
    public:
       CLIPSBlockAddressBuilder(std::string nm, FunctionNamer& namer) : CLIPSConstantBuilder(nm, "BlockAddress", namer) { }
-      void addFields(BlockAddress* addr, char* parent) {
-         CLIPSConstantBuilder::addFields((Constant*)addr, parent); 
-         addField("Target", addr->getBasicBlock()->getName());
-         addField("Function", addr->getFunction()->getName());
+      void setFields(BlockAddress* addr, char* parent) {
+         CLIPSConstantBuilder::setFields((Constant*)addr, parent); 
+         setField("Target", addr->getBasicBlock()->getName());
+         setField("Function", addr->getFunction()->getName());
       }
 };
 class CLIPSConstantAggregateZeroBuilder : public CLIPSConstantBuilder {
    public:
       CLIPSConstantAggregateZeroBuilder(std::string nm, FunctionNamer& namer) : CLIPSConstantBuilder(nm, "ConstantAggregateZero", namer) { }
-      void addFields(ConstantAggregateZero* addr, char* parent) {
-         CLIPSConstantBuilder::addFields((Constant*)addr, parent); 
+      void setFields(ConstantAggregateZero* addr, char* parent) {
+         CLIPSConstantBuilder::setFields((Constant*)addr, parent); 
       }
 };
 class CLIPSConstantArrayBuilder : public CLIPSConstantBuilder {
    public:
       CLIPSConstantArrayBuilder(std::string nm, FunctionNamer& namer) : CLIPSConstantBuilder(nm, "ConstantArray", namer) { }
-      void addFields(ConstantArray* addr, char* parent) {
-         CLIPSConstantBuilder::addFields((Constant*)addr, parent); 
+      void setFields(ConstantArray* addr, char* parent) {
+         CLIPSConstantBuilder::setFields((Constant*)addr, parent); 
       }
 };
 /* ConstantDataSequential doesn't exist in llvm 3.0 :/
@@ -47,13 +47,13 @@ class CLIPSConstantArrayBuilder : public CLIPSConstantBuilder {
 
  public:
  CLIPSConstantDataSequentialBuilder(std::string nm, FunctionNamer& namer) : CLIPSConstantBuilder(nm, "ConstantDataSequential", namer) { }
- void addFields(ConstantDataSequential* addr, char* parent)
+ void setFields(ConstantDataSequential* addr, char* parent)
  {
- CLIPSConstantBuilder::addFields((Constant*)addr, parent); 
- addField("ElementByteSize", addr->getElementByteSize());
- addField("IsString", addr->isString());
- addField("IsCString", addr->isCString());
- addField("ElementCount", addr->getNumElements());
+ CLIPSConstantBuilder::setFields((Constant*)addr, parent); 
+ setField("ElementByteSize", addr->getElementByteSize());
+ setField("IsString", addr->isString());
+ setField("IsCString", addr->isCString());
+ setField("ElementCount", addr->getNumElements());
  }
  void imbueKnowledge(ConstantDataSequential* addr)
  {
@@ -68,14 +68,14 @@ class CLIPSConstantArrayBuilder : public CLIPSConstantBuilder {
 class CLIPSConstantExpressionBuilder : public CLIPSConstantBuilder {
    public:
       CLIPSConstantExpressionBuilder(std::string nm, FunctionNamer& namer) : CLIPSConstantBuilder(nm, "ConstantExpression", namer) { }
-      void addFields(ConstantExpr* addr, char* parent) {
-         CLIPSConstantBuilder::addFields((Constant*)addr, parent); 
-         if(addr->isCast()) addTrueField("IsCast");
-         if(addr->isCompare()) addTrueField("IsCompare");
-         if(addr->hasIndices()) addTrueField("HasIndices");
-         if(addr->isGEPWithNoNotionalOverIndexing()) addTrueField("IsGEPWithNoNotionalOverIndexing");
-         addField("Predicate", addr->getPredicate());
-         addField("Operation", addr->getOpcodeName());
+      void setFields(ConstantExpr* addr, char* parent) {
+         CLIPSConstantBuilder::setFields((Constant*)addr, parent); 
+         if(addr->isCast()) setFieldTrue("IsCast");
+         if(addr->isCompare()) setFieldTrue("IsCompare");
+         if(addr->hasIndices()) setFieldTrue("HasIndices");
+         if(addr->isGEPWithNoNotionalOverIndexing()) setFieldTrue("IsGEPWithNoNotionalOverIndexing");
+         setField("Predicate", addr->getPredicate());
+         setField("Operation", addr->getOpcodeName());
         // ArrayRef<unsigned> indices = addr->getIndices();
         // llvm::errs() << "Index Count: " << indices.size() << '\n';
         // for(ArrayRef<unsigned>::iterator start = 
@@ -94,9 +94,9 @@ class CLIPSConstantExpressionBuilder : public CLIPSConstantBuilder {
  {
  public:
  CLIPSBinaryConstantExpressionBuilder(std::string nm, FunctionNamer& namer) : CLIPSConstantExpressionBuilder(nm, "BinaryConstantExpression", namer) { }
- void addFields(BinaryConstantExpr* addr, char* parent)
+ void setFields(BinaryConstantExpr* addr, char* parent)
  {
- CLIPSConstantBuilder::addFields((Constant*)addr, parent); 
+ CLIPSConstantBuilder::setFields((Constant*)addr, parent); 
  }
  void imbueKnowledge(BinaryConstantExpr* addr)
  {
@@ -107,10 +107,10 @@ class CLIPSConstantExpressionBuilder : public CLIPSConstantBuilder {
  {
  public:
  CLIPSCompareConstantExpressionBuilder(std::string nm, FunctionNamer& namer) : CLIPSConstantExpressionBuilder(nm, "CompareConstantExpression", namer) { }
- void addFields(CompareConstantExpr* addr, char* parent)
+ void setFields(CompareConstantExpr* addr, char* parent)
  {
- CLIPSConstantBuilder::addFields((Constant*)addr, parent); 
- addField("ActualPredicate", addr->predicate);
+ CLIPSConstantBuilder::setFields((Constant*)addr, parent); 
+ setField("ActualPredicate", addr->predicate);
  }
  void imbueKnowledge(CompareConstantExpr* addr)
  {
@@ -122,15 +122,15 @@ class CLIPSConstantExpressionBuilder : public CLIPSConstantBuilder {
 class CLIPSConstantFloatingPointBuilder : public CLIPSConstantBuilder {
    public:
       CLIPSConstantFloatingPointBuilder(std::string nm, FunctionNamer& namer) : CLIPSConstantBuilder(nm, "ConstantFloatingPoint", namer) { }
-      void addFields(ConstantFP* addr, char* parent) {
-         CLIPSConstantBuilder::addFields((Constant*)addr, parent); 
+      void setFields(ConstantFP* addr, char* parent) {
+         CLIPSConstantBuilder::setFields((Constant*)addr, parent); 
          if(addr->isZero()) {
-            addTrueField("IsZero");
-            addField("Value", 0.0);
+            setFieldTrue("IsZero");
+            setField("Value", 0.0);
          } else {
-            if(addr->isNegative()) addTrueField("IsNegative");
-            if(addr->isNaN()) addTrueField("IsNaN");
-            addField("Value", addr->getValueAPF().convertToDouble());
+            if(addr->isNegative()) setFieldTrue("IsNegative");
+            if(addr->isNaN()) setFieldTrue("IsNaN");
+            setField("Value", addr->getValueAPF().convertToDouble());
          }
          //While the APF is arbitrary precision it's not that big of a deal to 
          //lose precision for my purposes
@@ -140,20 +140,20 @@ class CLIPSConstantFloatingPointBuilder : public CLIPSConstantBuilder {
 class CLIPSConstantIntegerBuilder : public CLIPSConstantBuilder {
    public:
       CLIPSConstantIntegerBuilder(std::string nm, FunctionNamer& namer) : CLIPSConstantBuilder(nm, "ConstantInteger", namer) { }
-      void addFields(ConstantInt* addr, char* parent) {
-         CLIPSConstantBuilder::addFields((Constant*)addr, parent); 
-         addField("Width", addr->getBitWidth());
+      void setFields(ConstantInt* addr, char* parent) {
+         CLIPSConstantBuilder::setFields((Constant*)addr, parent); 
+         setField("Width", addr->getBitWidth());
          if(addr->isZero()) {
-            addTrueField("IsZero");
-            addField("Value", 0);
+            setFieldTrue("IsZero");
+            setField("Value", 0);
          } else {
             if(addr->isNegative()) {
-               addTrueField("IsNegative");
-               if(addr->isMinusOne()) addTrueField("IsMinusOne");
-               addField("Value", addr->getSExtValue());			
+               setFieldTrue("IsNegative");
+               if(addr->isMinusOne()) setFieldTrue("IsMinusOne");
+               setField("Value", addr->getSExtValue());			
             } else {
-               if(addr->isOne()) addTrueField("IsOne");
-               addField("Value", addr->getLimitedValue());
+               if(addr->isOne()) setFieldTrue("IsOne");
+               setField("Value", addr->getLimitedValue());
             }
          }
       }
@@ -162,25 +162,25 @@ class CLIPSConstantIntegerBuilder : public CLIPSConstantBuilder {
 class CLIPSConstantPointerNullBuilder : public CLIPSConstantBuilder {
    public:
       CLIPSConstantPointerNullBuilder(std::string nm, FunctionNamer& namer) : CLIPSConstantBuilder(nm, "ConstantPointerNull", namer) { }
-      void addFields(ConstantPointerNull* addr, char* parent) {
-         CLIPSConstantBuilder::addFields((Constant*)addr, parent); 
+      void setFields(ConstantPointerNull* addr, char* parent) {
+         CLIPSConstantBuilder::setFields((Constant*)addr, parent); 
       }
 };
 
 class CLIPSConstantStructBuilder : public CLIPSConstantBuilder {
    public:
       CLIPSConstantStructBuilder(std::string nm, FunctionNamer& namer) : CLIPSConstantBuilder(nm, "ConstantStruct", namer) { }
-      void addFields(ConstantStruct* addr, char* parent) {
-         CLIPSConstantBuilder::addFields((Constant*)addr, parent); 
+      void setFields(ConstantStruct* addr, char* parent) {
+         CLIPSConstantBuilder::setFields((Constant*)addr, parent); 
       }
 };
 
 class CLIPSConstantVectorBuilder : public CLIPSConstantBuilder {
    public:
       CLIPSConstantVectorBuilder(std::string nm, FunctionNamer& namer) : CLIPSConstantBuilder(nm, "ConstantVector", namer) { }
-      void addFields(ConstantVector* addr, char* parent) {
-         CLIPSConstantBuilder::addFields((Constant*)addr, parent); 
-         addField("SplatValue", Route(addr->getSplatValue(), getNamer()));
+      void setFields(ConstantVector* addr, char* parent) {
+         CLIPSConstantBuilder::setFields((Constant*)addr, parent); 
+         setField("SplatValue", Route(addr->getSplatValue(), getNamer()));
       }
 };
 
@@ -188,34 +188,34 @@ class CLIPSGlobalValueBuilder : public CLIPSConstantBuilder
 {
    public:
       CLIPSGlobalValueBuilder(std::string nm, std::string ty, FunctionNamer& namer) : CLIPSConstantBuilder(nm, ty, namer) { }
-      void addFields(GlobalValue* addr, char* parent) {
-         CLIPSConstantBuilder::addFields((Constant*)addr, parent); 
-         //addField("Alignment", addr->getAlignment());
-         //if(addr->hasUnnamedAddr()) addTrueField("HasUnnamedAddr"); 
-         //if(addr->hasDefaultVisibility()) addTrueField("HasDefaultVisibility"); 
-         //if(addr->hasHiddenVisibility()) addTrueField("HasHiddenVisibility"); 
-         //if(addr->hasProtectedVisibility()) addTrueField("HasProtectedVisibility"); 
+      void setFields(GlobalValue* addr, char* parent) {
+         CLIPSConstantBuilder::setFields((Constant*)addr, parent); 
+         //setField("Alignment", addr->getAlignment());
+         //if(addr->hasUnnamedAddr()) setFieldTrue("HasUnnamedAddr"); 
+         //if(addr->hasDefaultVisibility()) setFieldTrue("HasDefaultVisibility"); 
+         //if(addr->hasHiddenVisibility()) setFieldTrue("HasHiddenVisibility"); 
+         //if(addr->hasProtectedVisibility()) setFieldTrue("HasProtectedVisibility"); 
          //if(addr->hasSection()) {
-         //   addTrueField("HasSection");
-         //   addField("Section", addr->getSection());
+         //   setFieldTrue("HasSection");
+         //   setField("Section", addr->getSection());
          //}
-         //if(addr->hasExternalLinkage()) addTrueField("HasExternalLinkage"); 
-         //if(addr->hasAvailableExternallyLinkage()) addTrueField("HasAvailableExternallyLinkage"); 
-         //if(addr->hasLinkOnceLinkage()) addTrueField("HasLinkOnceLinkage"); 
-         //if(addr->hasWeakLinkage()) addTrueField("HasWeakLinkage");
-         //if(addr->hasAppendingLinkage()) addTrueField("HasAppendingLinkage"); 
-         //if(addr->hasInternalLinkage()) addTrueField("HasInternalLinkage"); 
-         //if(addr->hasPrivateLinkage()) addTrueField("HasPrivateLinkage"); 
-         //if(addr->hasLinkerPrivateLinkage()) addTrueField("HasLinkerPrivateLinkage"); 
-         //if(addr->hasLinkerPrivateWeakLinkage()) addTrueField("HasLinkerPrivateWeakLinkage"); 
-         //if(addr->hasLinkerPrivateWeakDefAutoLinkage()) addTrueField("HasLinkerPrivateWeakDefAutoLinkage"); 
-         //if(addr->hasLocalLinkage()) addTrueField("HasLocalLinkage");
-         //if(addr->hasDLLImportLinkage()) addTrueField("HasDLLImportLinkage");
-         //if(addr->hasDLLExportLinkage()) addTrueField("HasDLLExportLinkage");
-         //if(addr->hasExternalWeakLinkage()) addTrueField("HasExternalWeakLinkage");
-         //if(addr->hasCommonLinkage()) addTrueField("HasCommonLinkage");
-         //if(addr->mayBeOverridden()) addTrueField("MayBeOverridden");
-         //if(addr->isWeakForLinker()) addTrueField("IsWeakForLinker");
+         //if(addr->hasExternalLinkage()) setFieldTrue("HasExternalLinkage"); 
+         //if(addr->hasAvailableExternallyLinkage()) setFieldTrue("HasAvailableExternallyLinkage"); 
+         //if(addr->hasLinkOnceLinkage()) setFieldTrue("HasLinkOnceLinkage"); 
+         //if(addr->hasWeakLinkage()) setFieldTrue("HasWeakLinkage");
+         //if(addr->hasAppendingLinkage()) setFieldTrue("HasAppendingLinkage"); 
+         //if(addr->hasInternalLinkage()) setFieldTrue("HasInternalLinkage"); 
+         //if(addr->hasPrivateLinkage()) setFieldTrue("HasPrivateLinkage"); 
+         //if(addr->hasLinkerPrivateLinkage()) setFieldTrue("HasLinkerPrivateLinkage"); 
+         //if(addr->hasLinkerPrivateWeakLinkage()) setFieldTrue("HasLinkerPrivateWeakLinkage"); 
+         //if(addr->hasLinkerPrivateWeakDefAutoLinkage()) setFieldTrue("HasLinkerPrivateWeakDefAutoLinkage"); 
+         //if(addr->hasLocalLinkage()) setFieldTrue("HasLocalLinkage");
+         //if(addr->hasDLLImportLinkage()) setFieldTrue("HasDLLImportLinkage");
+         //if(addr->hasDLLExportLinkage()) setFieldTrue("HasDLLExportLinkage");
+         //if(addr->hasExternalWeakLinkage()) setFieldTrue("HasExternalWeakLinkage");
+         //if(addr->hasCommonLinkage()) setFieldTrue("HasCommonLinkage");
+         //if(addr->mayBeOverridden()) setFieldTrue("MayBeOverridden");
+         //if(addr->isWeakForLinker()) setFieldTrue("IsWeakForLinker");
       }
 };
 
@@ -224,9 +224,9 @@ class CLIPSGlobalAliasBuilder : public CLIPSGlobalValueBuilder {
    public:
       CLIPSGlobalAliasBuilder(std::string nm, FunctionNamer& namer) 
          : CLIPSGlobalValueBuilder(nm, "GlobalAlias", namer) { }
-      void addFields(GlobalAlias* addr, char* parent) {
-         CLIPSGlobalValueBuilder::addFields((GlobalValue*)addr, parent); 
-         addField("Aliasee", Route(addr->getAliasee(), getNamer()));
+      void setFields(GlobalAlias* addr, char* parent) {
+         CLIPSGlobalValueBuilder::setFields((GlobalValue*)addr, parent); 
+         setField("Aliasee", Route(addr->getAliasee(), getNamer()));
       }
 };
 
@@ -235,16 +235,16 @@ class CLIPSGlobalVariableBuilder : public CLIPSGlobalValueBuilder {
       CLIPSGlobalVariableBuilder(std::string nm, FunctionNamer& namer) 
          : CLIPSGlobalValueBuilder(nm, "GlobalVariable", namer) { }
 
-      void addFields(GlobalVariable* addr, char* parent) {
-         CLIPSGlobalValueBuilder::addFields((GlobalValue*)addr, parent); 
+      void setFields(GlobalVariable* addr, char* parent) {
+         CLIPSGlobalValueBuilder::setFields((GlobalValue*)addr, parent); 
          if(addr->hasInitializer()) {
-            addTrueField("HasInitializer");
-            addField("Initializer", Route(addr->getInitializer(), getNamer()));
+            setFieldTrue("HasInitializer");
+            setField("Initializer", Route(addr->getInitializer(), getNamer()));
          }
-         if(addr->hasDefinitiveInitializer()) addTrueField("HasDefinitiveInitializer");
-         if(addr->hasUniqueInitializer()) addTrueField("HasUniqueInitializer");
-         if(addr->isConstant()) addTrueField("IsConstant"); 
-         //if(addr->isThreadLocal()) addTrueField("IsThreadLocal");
+         if(addr->hasDefinitiveInitializer()) setFieldTrue("HasDefinitiveInitializer");
+         if(addr->hasUniqueInitializer()) setFieldTrue("HasUniqueInitializer");
+         if(addr->isConstant()) setFieldTrue("IsConstant"); 
+         //if(addr->isThreadLocal()) setFieldTrue("IsThreadLocal");
       }
 };
 
@@ -253,8 +253,8 @@ class CLIPSUndefValueBuilder : public CLIPSConstantBuilder {
       CLIPSUndefValueBuilder(std::string nm, FunctionNamer& namer) : 
          CLIPSConstantBuilder(nm, "UndefValue", namer) { }
 
-      void addFields(UndefValue* addr, char* parent) {
-         CLIPSConstantBuilder::addFields((Constant*)addr, parent); 
+      void setFields(UndefValue* addr, char* parent) {
+         CLIPSConstantBuilder::setFields((Constant*)addr, parent); 
       }
 };
 

@@ -4,13 +4,13 @@
 class CLIPSArgumentBuilder : public CLIPSValueBuilder {
    public:
       CLIPSArgumentBuilder(std::string nm, FunctionNamer& namer) : CLIPSValueBuilder(nm, "Argument", namer) { }
-      void addFields(Argument* arg, char* parent) {
-         CLIPSValueBuilder::addFields((Value*)arg, parent);
-         addField("Index", arg->getArgNo());
-         if(arg->hasNestAttr()) addTrueField("HasNestAttribute");
-         if(arg->hasNoAliasAttr()) addTrueField("HasNoAliasAttribute");
-         if(arg->hasNoCaptureAttr()) addTrueField("HasNoCaptureAttribute");
-         if(arg->hasStructRetAttr()) addTrueField("HasStructRetAttribute");
+      void setFields(Argument* arg, char* parent) {
+         CLIPSValueBuilder::setFields((Value*)arg, parent);
+         setField("Index", arg->getArgNo());
+         if(arg->hasNestAttr()) setFieldTrue("HasNestAttribute");
+         if(arg->hasNoAliasAttr()) setFieldTrue("HasNoAliasAttribute");
+         if(arg->hasNoCaptureAttr()) setFieldTrue("HasNoCaptureAttribute");
+         if(arg->hasStructRetAttr()) setFieldTrue("HasStructRetAttribute");
       }
       
 };

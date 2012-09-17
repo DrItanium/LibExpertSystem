@@ -3,8 +3,8 @@
 #include "ConstructionTools.h"
 class CLIPSTypeBuilder : public CLIPSObjectBuilder {
 	public:
-		CLIPSTypeBuilder(std::string nm, FunctionNamer& namer, std::string ty = "LLVMType") : CLIPSObjectBuilder(nm, ty, namer) { }
-		void addFields(Type* type) {
+		CLIPSTypeBuilder(std::string nm, FunctionNamer& namer, TypeLibrarian& lib, std::string ty = "LLVMType") : CLIPSObjectBuilder(nm, ty, namer, lib) { }
+		void setFields(Type* type) {
          FunctionNamer& namer = getNamer();
 			PointerAddress pointer = (PointerAddress)type;
 			if(!namer.pointerRegistered(pointer)) {
@@ -12,93 +12,95 @@ class CLIPSTypeBuilder : public CLIPSObjectBuilder {
 				namer.getTranslationTable().insert(pair);
 			}
 			setPointer(pointer);
-			if(type->isVoidTy()) addTrueField("IsVoidType");
-			if(type->isFunctionTy()) addTrueField("IsFunctionType"); 
+			if(type->isVoidTy()) setFieldTrue("IsVoidType");
+			if(type->isFunctionTy()) setFieldTrue("IsFunctionType"); 
 			if(type->isFPOrFPVectorTy()) {
-				addTrueField("IsFPOrFPVectorType");
-				if(type->isFloatingPointTy()) addTrueField("IsFloatingPointType");
-				if(type->isFloatTy()) addTrueField("IsFloatType");
-				if(type->isDoubleTy()) addTrueField("IsDoubleType");
-				if(type->isX86_FP80Ty()) addTrueField("IsX86FP80Type"); 
-				if(type->isFP128Ty()) addTrueField("IsFP128Type");
-				if(type->isPPC_FP128Ty()) addTrueField("IsPPCFP128Type");
-				addField("FPMantissaWidth", type->getFPMantissaWidth());
+				setFieldTrue("IsFPOrFPVectorType");
+				if(type->isFloatingPointTy()) setFieldTrue("IsFloatingPointType");
+				if(type->isFloatTy()) setFieldTrue("IsFloatType");
+				if(type->isDoubleTy()) setFieldTrue("IsDoubleType");
+				if(type->isX86_FP80Ty()) setFieldTrue("IsX86FP80Type"); 
+				if(type->isFP128Ty()) setFieldTrue("IsFP128Type");
+				if(type->isPPC_FP128Ty()) setFieldTrue("IsPPCFP128Type");
+				setField("FPMantissaWidth", type->getFPMantissaWidth());
 			}
-			if(type->isX86_MMXTy()) addTrueField("IsX86MMXType");
-			if(type->isLabelTy()) addTrueField("IsLabelType");
-			if(type->isMetadataTy()) addTrueField("IsMetadataType");
+			if(type->isX86_MMXTy()) setFieldTrue("IsX86MMXType");
+			if(type->isLabelTy()) setFieldTrue("IsLabelType");
+			if(type->isMetadataTy()) setFieldTrue("IsMetadataType");
 			if(type->isIntOrIntVectorTy()) {
-				addTrueField("IsIntOrIntVectorType");
-				if(type->isIntegerTy()) addTrueField("IsIntegerType");
+				setFieldTrue("IsIntOrIntVectorType");
+				if(type->isIntegerTy()) setFieldTrue("IsIntegerType");
 			}
-			if(type->isStructTy()) addTrueField("IsStructType"); 
-			if(type->isArrayTy()) addTrueField("IsArrayType"); 
-			if(type->isPointerTy()) addTrueField("IsPointerType"); 
+			if(type->isStructTy()) setFieldTrue("IsStructType"); 
+			if(type->isArrayTy()) setFieldTrue("IsArrayType"); 
+			if(type->isPointerTy()) setFieldTrue("IsPointerType"); 
 			if(type->isVectorTy()) {
-				addTrueField("IsVectorType"); 
-				addField("ScalarSizeInBits", type->getScalarSizeInBits());
+				setFieldTrue("IsVectorType"); 
+				setField("ScalarSizeInBits", type->getScalarSizeInBits());
 			}
-			if(type->isEmptyTy()) addTrueField("IsEmptyType"); 
+			if(type->isEmptyTy()) setFieldTrue("IsEmptyType"); 
 			if(type->isPrimitiveType()) {
-				addTrueField("IsPrimitiveType");
-				addField("PrimitiveSizeInBits", type->getPrimitiveSizeInBits());
+				setFieldTrue("IsPrimitiveType");
+				setField("PrimitiveSizeInBits", type->getPrimitiveSizeInBits());
 			}
-			if(type->isDerivedType()) addTrueField("IsDerivedType"); 
-			if(type->isFirstClassType()) addTrueField("IsFirstClassType");
-			if(type->isSingleValueType()) addTrueField("IsSingleValueType"); 
-			if(type->isAggregateType()) addTrueField("IsAggregateType");
-			if(type->isSized()) addTrueField("IsSized");
-			if(type->getNumContainedTypes() > 0) {
-				openField("Subtypes");
+			if(type->isDerivedType()) setFieldTrue("IsDerivedType"); 
+			if(type->isFirstClassType()) setFieldTrue("IsFirstClassType");
+			if(type->isSingleValueType()) setFieldTrue("IsSingleValueType"); 
+			if(type->isAggregateType()) setFieldTrue("IsAggregateType");
+			if(type->isSized()) setFieldTrue("IsSized");
+         unsigned typeCount = type->getNumContainedTypes();
+			if(typeCount > 0) {
+            MultifieldBuilder b0(typeCount);
+				//openField("Subtypes");
+            unsigned index = 1;
 				for(Type::subtype_iterator i = type->subtype_begin(),
-						e = type->subtype_end(); i != e; ++i) {
+						e = type->subtype_end(); i != e; ++i, ++index) {
 					Type* t = (*i);
-					appendValue(Route(t, namer));
+               b0.setSlot(index, Route(t, namer));
 				}
-				closeField();
+				//closeField();
 			}
 		}
 };
 class CLIPSFunctionTypeBuilder : public CLIPSTypeBuilder {
 	public:
-		CLIPSFunctionTypeBuilder(std::string nm, FunctionNamer& namer, std::string ty = "FunctionType") : CLIPSTypeBuilder(nm, namer, ty) { }
+		CLIPSFunctionTypeBuilder(std::string nm, FunctionNamer& namer, TypeLibrarian& lib, std::string ty = "FunctionType") : CLIPSTypeBuilder(nm, namer, lib, ty) { }
 };
 class CLIPSCompositeTypeBuilder : public CLIPSTypeBuilder {
 	public:
-		CLIPSCompositeTypeBuilder(std::string nm, FunctionNamer& namer, std::string ty = "CompositeType") : CLIPSTypeBuilder(nm, namer, ty) { }
+		CLIPSCompositeTypeBuilder(std::string nm, FunctionNamer& namer, TypeLibrarian& lib, std::string ty = "CompositeType") : CLIPSTypeBuilder(nm, namer, lib, ty) { }
 };
 class CLIPSSequentialTypeBuilder : public CLIPSCompositeTypeBuilder {
 	public:
-		CLIPSSequentialTypeBuilder(std::string nm, FunctionNamer& namer, std::string ty = "SequentialType") : CLIPSCompositeTypeBuilder(nm, namer, ty) { }
+		CLIPSSequentialTypeBuilder(std::string nm, FunctionNamer& namer, TypeLibrarian& lib, std::string ty = "SequentialType") : CLIPSCompositeTypeBuilder(nm, namer, lib, ty) { }
 };
 class CLIPSArrayTypeBuilder : public CLIPSSequentialTypeBuilder {
 	public:
-		CLIPSArrayTypeBuilder(std::string nm, FunctionNamer& namer, std::string ty = "ArrayType") : CLIPSSequentialTypeBuilder(nm, namer, ty) { }
+		CLIPSArrayTypeBuilder(std::string nm, FunctionNamer& namer, TypeLibrarian& lib, std::string ty = "ArrayType") : CLIPSSequentialTypeBuilder(nm, namer, lib, ty) { }
 };
 class CLIPSPointerTypeBuilder : public CLIPSSequentialTypeBuilder {
 	public:
-		CLIPSPointerTypeBuilder(std::string nm, FunctionNamer& namer, std::string ty = "PointerType") : CLIPSSequentialTypeBuilder(nm, namer, ty) { }
+		CLIPSPointerTypeBuilder(std::string nm, FunctionNamer& namer, TypeLibrarian& lib, std::string ty = "PointerType") : CLIPSSequentialTypeBuilder(nm, namer, lib, ty) { }
 
 };
 class CLIPSVectorTypeBuilder : public CLIPSSequentialTypeBuilder {
 	public:
-		CLIPSVectorTypeBuilder(std::string nm, FunctionNamer& namer, 
-				std::string ty = "VectorType") : CLIPSSequentialTypeBuilder(nm, namer, ty) { }
+		CLIPSVectorTypeBuilder(std::string nm, FunctionNamer& namer, TypeLibrarian& lib, std::string ty = "VectorType") : CLIPSSequentialTypeBuilder(nm, namer, lib, ty) { }
 
 };
 class CLIPSStructTypeBuilder : public CLIPSCompositeTypeBuilder {
 	public:
-		CLIPSStructTypeBuilder(std::string nm, FunctionNamer& namer, std::string ty = "StructType") : CLIPSCompositeTypeBuilder(nm, namer, ty) { }
-		void addFields(StructType* st, char* parent) 
+		CLIPSStructTypeBuilder(std::string nm, FunctionNamer& namer, TypeLibrarian& lib, std::string ty = "StructType") : CLIPSCompositeTypeBuilder(nm, namer, lib, ty) { }
+		void setFields(StructType* st, char* parent) 
 		{
-			CLIPSTypeBuilder::addFields(st);
+			CLIPSTypeBuilder::setFields(st);
 			setParent(parent);
-			addField("Name", st->getName());
+			setField("Name", st->getName());
 		}
 };
 
 class CLIPSIntegerTypeBuilder : public CLIPSTypeBuilder {
 	public:
-		CLIPSIntegerTypeBuilder(std::string nm, FunctionNamer& namer, std::string ty = "IntegerType") : CLIPSTypeBuilder(nm, namer, ty) { }
+		CLIPSIntegerTypeBuilder(std::string nm, FunctionNamer& namer, TypeLibrarian& lib, std::string ty = "IntegerType") : CLIPSTypeBuilder(nm, namer, lib, ty) { }
 };
 #endif
