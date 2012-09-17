@@ -28,6 +28,8 @@
 #include "llvm/Function.h"
 #include "llvm/Analysis/LoopInfo.h"
 #include "FunctionNamer.h"
+#include "TypeLibrarian.h"
+#include "MultifieldBuilder.h"
 extern "C" {
 #include "clips.h"
 }
@@ -36,27 +38,39 @@ extern "C" {
 using namespace llvm;
 class CLIPSObjectBuilder {
    private:
-      bool converted;
-      bool opened;
-      bool closed;
+      void* rawInstance;
       std::string name;
       std::string type;
-      std::string tmp;
-      raw_string_ostream* stream;
       FunctionNamer* namer;
+      TypeLibrarian* tl;
    public:
       CLIPSObjectBuilder(std::string n, std::string t, FunctionNamer& uidCreator);
       ~CLIPSObjectBuilder();
       std::string& getName() { return name; }
       std::string& getType() { return type; }
       FunctionNamer& getNamer() { return *namer; }
-      raw_string_ostream& getStream() { return *stream; }
-      bool isOpen() { return opened; }
-      bool isClosed() { return closed; }
-      bool isKnowledge() { return converted; }
+      TypeLibrarian& getLibrarian() { return *tl; }
       void setParent(char* p); 
       void setParent(const char* p); 
       void setPointer(PointerAddress v); 
+      void setField(const char* n, DATA_OBJECT_PTR ptr);
+      void setField(const char* n, int type, void* value);
+      void setField(const char* n, PointerAddress v);
+      void setField(const char* n, unsigned v);
+      void setField(const char* n, uint64_t v);
+      void setField(const char* n, int64_t v);
+      void setField(const char* n, int v);
+      void setField(const char* n, long v);
+      void setField(const char* n, float v);
+      void setField(const char* n, double v);
+      void setField(const char* n, char* v, bool isStringType = false);
+      void setField(const char* n, const char* v, bool isStringType = false);
+      void setField(const char* n, std::string v, bool isStringType = false);
+      void setField(const char* n, llvm::StringRef v, bool isStringType = false);
+      void setField(const char* n, bool v);
+      void setFieldTrue(const char* n);
+      void setFieldFalse(const char* n);
+      void setField(const char* n, MultifieldBuilder* builder);
       void addField(const char* n, unsigned v);
       void addField(const char* n, PointerAddress v); 
       void addField(const char* n, int v); 
@@ -65,13 +79,14 @@ class CLIPSObjectBuilder {
       void addField(const char* n, char* v); 
       void addField(const char* n, const char* v); 
       void addField(const char* n, std::string v); 
-		void addField(const char* n, llvm::StringRef ref);
+		void addField(const char* n, llvm::StringRef v);
       void addField(const char* n, bool v); 
       void addField(const char* n, uint64_t v);
       void addField(const char* n, int64_t v); 
       void addStringField(const char* n, const std::string& str);
 		void addTrueField(const char* n);
 		void addFalseField(const char* n);
+      /*
 		void openField(const char* name);
 		void appendValue(unsigned v);
 		void appendValue(PointerAddress v);
@@ -91,6 +106,7 @@ class CLIPSObjectBuilder {
       void open();
       void close();
       void convertToKnowledge();
+      */
       void addFields(PointerAddress pointer, char* parent);
 };
 
@@ -105,5 +121,4 @@ class CLIPSUserBuilder : public CLIPSValueBuilder {
       CLIPSUserBuilder(std::string nm, std::string ty, FunctionNamer& namer);
       void addFields(User* user, char* parent);
 };
-//Thank you DOSBOX for this little tidbit :D
 #endif
