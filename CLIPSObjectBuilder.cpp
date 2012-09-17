@@ -40,9 +40,6 @@ void CLIPSObjectBuilder::setField(const char* n, int64_t v) {
 void CLIPSObjectBuilder::setField(const char* n, int v) {
    setField(n, INTEGER, AddLong(v));
 }
-void CLIPSObjectBuilder::setField(const char* n, long v) {
-   setField(n, INTEGER, AddLong(v));
-}
 void CLIPSObjectBuilder::setField(const char* n, float v) {
    setField(n, FLOAT, AddDouble(v));
 }

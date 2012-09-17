@@ -1,6 +1,5 @@
 #ifndef _multifield_builder_h
 #define _multifield_builder_h
-#include <string>
 #include "llvm/Support/raw_ostream.h"
 #include "llvm/Support/Casting.h"
 #include "llvm/Instruction.h"
@@ -29,6 +28,7 @@
 #include "llvm/Function.h"
 #include "llvm/Analysis/LoopInfo.h"
 #include "FunctionNamer.h"
+
 extern "C" {
 #include "clips.h"
 }
@@ -60,4 +60,5 @@ class MultifieldBuilder {
       void setTrue(unsigned index);
       void setFalse(unsigned index);
       void bindToDataObjectPointer(DATA_OBJECT_PTR ptr);
-}
+};
+#endif

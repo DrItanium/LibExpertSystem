@@ -44,7 +44,8 @@ class CLIPSObjectBuilder {
       FunctionNamer* namer;
       TypeLibrarian* tl;
    public:
-      CLIPSObjectBuilder(std::string n, std::string t, FunctionNamer& uidCreator);
+      CLIPSObjectBuilder(std::string n, std::string t, FunctionNamer& uidCreator, 
+            TypeLibrarian& librarian);
       ~CLIPSObjectBuilder();
       std::string& getName() { return name; }
       std::string& getType() { return type; }
@@ -60,7 +61,6 @@ class CLIPSObjectBuilder {
       void setField(const char* n, uint64_t v);
       void setField(const char* n, int64_t v);
       void setField(const char* n, int v);
-      void setField(const char* n, long v);
       void setField(const char* n, float v);
       void setField(const char* n, double v);
       void setField(const char* n, char* v, bool isStringType = false);

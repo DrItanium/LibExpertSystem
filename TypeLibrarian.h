@@ -19,5 +19,5 @@ class TypeLibrarian {
       void* lookupClass(std::string name);
       void* lookupClass(char* name);
       void* lookupClass(const char* name);
-}
+};
 #endif
