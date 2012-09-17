@@ -154,3 +154,11 @@ void CLIPSObjectBuilder::addFalseField(const char* n) {
 void CLIPSObjectBuilder::addStringField(const char* n, const std::string& string) {
    setField(n, string, true);
 }
+void CLIPSObjectBuilder::setFieldFromChoice(const char* n, bool value, 
+                                            char* onTrue, char* onFalse) {
+   if(value) {
+      setField(n, onTrue);
+   } else {
+      setField(n, onFalse);
+   }
+}

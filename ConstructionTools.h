@@ -71,6 +71,8 @@ class CLIPSObjectBuilder {
       void setFieldTrue(const char* n);
       void setFieldFalse(const char* n);
       void setField(const char* n, MultifieldBuilder* builder);
+      void setFieldFromChoice(const char* n, bool value, char* onTrue, 
+                              char* onFalse);
       void addField(const char* n, unsigned v);
       void addField(const char* n, PointerAddress v); 
       void addField(const char* n, int v); 
