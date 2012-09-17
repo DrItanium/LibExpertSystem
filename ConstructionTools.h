@@ -107,18 +107,18 @@ class CLIPSObjectBuilder {
       void close();
       void convertToKnowledge();
       */
-      void addFields(PointerAddress pointer, char* parent);
+      void setFields(PointerAddress pointer, char* parent);
 };
 
 class CLIPSValueBuilder : public CLIPSObjectBuilder {
    public:
       CLIPSValueBuilder(std::string nm, std::string ty, FunctionNamer& namer);
       void setType(Type* t);
-      void addFields(Value* val, char* parent);
+      void setFields(Value* val, char* parent);
 };
 class CLIPSUserBuilder : public CLIPSValueBuilder {
    public:
       CLIPSUserBuilder(std::string nm, std::string ty, FunctionNamer& namer);
-      void addFields(User* user, char* parent);
+      void setFields(User* user, char* parent);
 };
 #endif

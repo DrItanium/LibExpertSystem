@@ -139,7 +139,7 @@ void CLIPSObjectBuilder::addField(const char* n, int64_t v) {
 void CLIPSObjectBuilder::addField(const char* n, llvm::StringRef v) {
    setField(n, v);
 }
-void CLIPSObjectBuilder::addFields(PointerAddress pointer, char* parent) {
+void CLIPSObjectBuilder::setFields(PointerAddress pointer, char* parent) {
    setParent(parent);
    setPointer(pointer);
    std::string& name = getName();
