@@ -4,6 +4,7 @@
 extern "C" {
 #include "clips.h"
 }
+
 using namespace llvm;
 class TypeLibrarian {
    private:
