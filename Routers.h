@@ -33,18 +33,18 @@ extern "C" {
 #include "clips.h"
 }
 using namespace llvm;
-std::string Route(Value* val, char* parent, FunctionNamer& namer);
-std::string Route(Value* val, FunctionNamer& namer);
-std::string Route(User* user, char* parent, FunctionNamer& namer);
-std::string Route(Constant* cnst, FunctionNamer& namer);
-std::string Route(Constant* cnst, char* parent, FunctionNamer& namer);
-std::string Route(Instruction* inst, char* parent, FunctionNamer& namer);
-std::string Route(Type* t, FunctionNamer& namer);
-std::string Route(Operator* op, char* parent, FunctionNamer& namer);
+std::string Route(Value* val, char* parent, FunctionNamer& namer, TypeLibrarian& tl);
+std::string Route(Value* val, FunctionNamer& namer, TypeLibrarian& tl);
+std::string Route(User* user, char* parent, FunctionNamer& namer, TypeLibrarian& tl);
+std::string Route(Constant* cnst, FunctionNamer& namer, TypeLibrarian& tl);
+std::string Route(Constant* cnst, char* parent, FunctionNamer& namer, TypeLibrarian& tl);
+std::string Route(Instruction* inst, char* parent, FunctionNamer& namer, TypeLibrarian& tl);
+std::string Route(Type* t, FunctionNamer& namer, TypeLibrarian& tl);
+std::string Route(Operator* op, char* parent, FunctionNamer& namer, TypeLibrarian& tl);
 std::string Route(BasicBlock* bb, char* parent, FunctionNamer& namer, bool constructInstructions = true);
 std::string Route(Region* region, char* parent, FunctionNamer& namer, LoopInfo* li);
-std::string Route(Argument* arg, char* parent, FunctionNamer& namer);
-std::string Route(Loop* loop, char* parent, FunctionNamer& namer);
-void RouteLoopInfo(LoopInfo& li, char* parent, FunctionNamer& namer);
-void ModifyFunctionContents(Function& fn, FunctionNamer& namer);
+std::string Route(Argument* arg, char* parent, FunctionNamer& namer, TypeLibrarian& tl);
+std::string Route(Loop* loop, char* parent, FunctionNamer& namer, TypeLibrarian& tl);
+void RouteLoopInfo(LoopInfo& li, char* parent, FunctionNamer& namer, TypeLibrarian& tl);
+void ModifyFunctionContents(Function& fn, FunctionNamer& namer, TypeLibrarian& tl);
 #endif
