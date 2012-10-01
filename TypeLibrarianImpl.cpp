@@ -1,5 +1,4 @@
 #include "TypeLibrarian.h"
-
 TypeLibrarian::TypeLibrarian() {
    names = new std::map<char*, PointerAddress, cmp_str>(); 
 }
@@ -25,4 +24,3 @@ void* TypeLibrarian::lookupClass(char* name) {
       return ptr;
    }
 }
-
