@@ -11,7 +11,13 @@ CLIPSObjectBuilder::CLIPSObjectBuilder(std::string n, std::string t,
    namer = &uidCreator;
    tl = &librarian; 
    classPtr = tl->lookupClass(t);
-   rawInstance = CreateRawInstance(classPtr, (char*)name.c_str());
+   char* buf = CharBuffer(1024); 
+   sprintf(buf, "(%s of %s)", name.c_str(), t.c_str());
+   rawInstance = MakeInstance(buf);
+   free(buf);
+   //rawInstance = CreateRawInstance(classPtr, (char*)name.c_str());
+
+//   llvm::errs() << "Finished creating raw instance " << name << "\n";
 }
 CLIPSObjectBuilder::~CLIPSObjectBuilder() {
 }
@@ -90,9 +96,9 @@ void CLIPSObjectBuilder::setFieldFalse(const char* n) {
 
 void CLIPSObjectBuilder::setField(const char* n, MultifieldBuilder* builder) {
    DATA_OBJECT tmp;
-   DATA_OBJECT_PTR q = &tmp;
-   builder->bindToDataObjectPointer(q);
-   setField(n, q);
+   //DATA_OBJECT_PTR q = &tmp;
+   builder->bindToDataObjectPointer(&tmp);
+   setField(n, &tmp);
 }
 void CLIPSObjectBuilder::setParent(char* p) {
    setField("Parent", p);
@@ -140,6 +146,8 @@ void CLIPSObjectBuilder::addField(const char* n, llvm::StringRef v) {
    setField(n, v);
 }
 void CLIPSObjectBuilder::setFields(PointerAddress pointer, char* parent) {
+   setField("ID", name);
+   setField("Class", type);
    setParent(parent);
    setPointer(pointer);
    std::string& name = getName();
@@ -161,4 +169,10 @@ void CLIPSObjectBuilder::setFieldFromChoice(const char* n, bool value,
    } else {
       setField(n, onFalse);
    }
+}
+void CLIPSObjectBuilder::printOutContents() {
+   DATA_OBJECT obj, result;
+   SetType(obj, INSTANCE_ADDRESS);
+   SetValue(obj, rawInstance);
+   Send(&obj, "print", NULL, &result);
 }

@@ -51,6 +51,7 @@ class CLIPSObjectBuilder {
       std::string& getType() { return type; }
       FunctionNamer& getNamer() { return *namer; }
       TypeLibrarian& getLibrarian() { return *tl; }
+      void printOutContents();
       void setParent(char* p); 
       void setParent(const char* p); 
       void setPointer(PointerAddress v); 
