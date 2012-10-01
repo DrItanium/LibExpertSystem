@@ -114,13 +114,13 @@ class CLIPSObjectBuilder {
 
 class CLIPSValueBuilder : public CLIPSObjectBuilder {
    public:
-      CLIPSValueBuilder(std::string nm, std::string ty, FunctionNamer& namer);
+      CLIPSValueBuilder(std::string nm, std::string ty, FunctionNamer& namer, TypeLibrarian& tl);
       void setType(Type* t);
       void setFields(Value* val, char* parent);
 };
 class CLIPSUserBuilder : public CLIPSValueBuilder {
    public:
-      CLIPSUserBuilder(std::string nm, std::string ty, FunctionNamer& namer);
+      CLIPSUserBuilder(std::string nm, std::string ty, FunctionNamer& namer, TypeLibrarian& tl);
       void setFields(User* user, char* parent);
 };
 #endif

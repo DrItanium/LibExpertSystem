@@ -4,12 +4,12 @@
 #include "ConstructionTools.h"
 class CLIPSOperatorBuilder : public CLIPSUserBuilder {
    public:
-      CLIPSOperatorBuilder(std::string nm, std::string ty, FunctionNamer& namer) : CLIPSUserBuilder(nm, ty, namer) { }
+      CLIPSOperatorBuilder(std::string nm, std::string ty, FunctionNamer& namer, TypeLibrarian& tl) : CLIPSUserBuilder(nm, ty, namer, tl) { }
       void addFields(Operator* v, char* parent);
 };
 class CLIPSOverflowingBinaryOperatorBuilder : public CLIPSOperatorBuilder {
    public:
-      CLIPSOverflowingBinaryOperatorBuilder(std::string nm, FunctionNamer& namer) : CLIPSOperatorBuilder(nm, "OverflowingBinaryOperator", namer) { }
+      CLIPSOverflowingBinaryOperatorBuilder(std::string nm, FunctionNamer& namer, TypeLibrarian& tl) : CLIPSOperatorBuilder(nm, "OverflowingBinaryOperator", namer, tl) { }
       void addFields(OverflowingBinaryOperator* v, char* parent);
 };
 /* for some reason this doesn't exist and as such I have commented it out
@@ -28,7 +28,7 @@ class CLIPSFPMathOperatorBuilder : public CLIPSOperatorBuilder
 */
 class CLIPSPossiblyExactOperatorBuilder : public CLIPSOperatorBuilder {
    public:
-      CLIPSPossiblyExactOperatorBuilder(std::string nm, FunctionNamer& namer) : CLIPSOperatorBuilder(nm, "PossiblyExactOperator", namer) { }
+      CLIPSPossiblyExactOperatorBuilder(std::string nm, FunctionNamer& namer, TypeLibrarian& tl) : CLIPSOperatorBuilder(nm, "PossiblyExactOperator", namer, tl) { }
       void addFields(PossiblyExactOperator* v, char* parent);
 };
 
