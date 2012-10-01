@@ -141,8 +141,12 @@ void CLIPSCallInstructionBuilder::setFields(CallInst* target, char* parent) {
    if(target-> hasByValArgument()) setFieldTrue("HasByValArgument");
    if(target-> isInlineAsm()) setFieldTrue("IsInlineAsm");
    Function* fn = target->getCalledFunction();
-   setFieldFromChoice("CalledFunction", (fn != NULL), 
-                      (char*)fn->getName().data(), (char*)"indirect");
+   if(fn != NULL)
+      setField("CalledFunction", (char*)fn->getName().data());
+   else
+      setField("CalledFunction", "indirect");
+   //setFieldFromChoice("CalledFunction", (fn != NULL), 
+   //                   (char*)fn->getName().data(), (char*)"indirect");
    if(target->getNumArgOperands() > 0) {
       unsigned size = target->getNumArgOperands();
       MultifieldBuilder builder(size); 
