@@ -1,8 +1,9 @@
 #include "LoopConstruction.h"
-
+CLIPSLoopBuilder::CLIPSLoopBuilder(std::string nm, FunctionNamer& namer, TypeLibrarian& ti) : CLIPSObjectBuilder(nm, "Loop", namer, ti) { }
 void CLIPSLoopBuilder::setFields(Loop* loop, char* parent) {
    char* t = (char*)getName().c_str();
    FunctionNamer& n = getNamer();
+   TypeLibrarian& tl = getLibrarian();
    CLIPSObjectBuilder::setFields((PointerAddress)loop, parent);
    BasicBlock* latch = loop->getLoopLatch();
    BasicBlock* header = loop->getHeader();
@@ -26,14 +27,14 @@ void CLIPSLoopBuilder::setFields(Loop* loop, char* parent) {
    unsigned index = 1;
    for(Loop::iterator q = loop->begin(), qu = loop->end(); q != qu; ++q, ++index) {
       Loop* subLoop = *q;
-      std::string result = Route(subLoop, t, n);
-      subLoops.setSlot(index, result);
+      std::string result = Route(subLoop, t, n, tl);
+      contents.setSlot(index, result);
       //appendValue(result);
    }
    for(Loop::block_iterator s = loop->block_begin(), e = loop->block_end(); s != e; ++s) {
       BasicBlock* bb = (*s);
       if(!n.pointerRegistered((PointerAddress)bb)) {
-         contents.setSlot(index, Route(bb, t, n));
+         contents.setSlot(index, Route(bb, t, n, tl));
          //appendValue(Route(bb, t, n));
          index++;
       }
@@ -51,10 +52,4 @@ void CLIPSLoopBuilder::setFields(Loop* loop, char* parent) {
    }
    //closeField();
    setField("Exits", &exits);
-}
-void CLIPSLoopBuilder::build(Loop* loop, char* parent) {
-   open();
-   addFields(loop, parent);
-   close();
-   convertToKnowledge();
 }

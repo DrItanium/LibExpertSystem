@@ -1,5 +1,5 @@
-#ifndef _multifield_builder_h
-#define _multifield_builder_h
+#ifndef multifield_builder_h
+#define multifield_builder_h
 #include "llvm/Support/raw_ostream.h"
 #include "llvm/Support/Casting.h"
 #include "llvm/Instruction.h"

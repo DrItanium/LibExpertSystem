@@ -12,6 +12,7 @@ void CLIPSRegionBuilder::setFields(Region* region, char* parent) {
    if(exit != NULL) addField("Exits", exit->getName());
    char* name = (char*)getName().c_str();
    FunctionNamer& namer = getNamer();
+   TypeLibrarian& lib = getLibrarian();
    std::set<std::string> contents;
    std::map<std::string, std::set<BasicBlock*> > directFacts;
    for(Region::element_iterator i = region->element_begin(), e = region->element_end(); i != e; ++i) {
@@ -39,11 +40,11 @@ void CLIPSRegionBuilder::setFields(Region* region, char* parent) {
                contents.insert(namer.nameFromPointer((PointerAddress)target));
             }
          } else {
-            contents.insert(Route(bb, name, namer));
+            contents.insert(Route(bb, name, namer, lib));
          }
       } else {
          Region* subRegion = rn->getNodeAs<Region>();
-         contents.insert(Route(subRegion, name, namer, getLoopInfo()));
+         contents.insert(Route(subRegion, name, namer,lib, getLoopInfo()));
       }
    }
    if(!directFacts.empty()) {

@@ -2,7 +2,7 @@
 unsigned MultifieldBuilder::getCount() {
    return count; 
 }
-void* getMultifieldPointer() {
+void* MultifieldBuilder::getMultifieldPointer() {
    return multifieldPointer;
 }
 void MultifieldBuilder::setType(unsigned index, int type) {
@@ -19,13 +19,13 @@ void MultifieldBuilder::setSlot(unsigned index, PointerAddress value) {
    setSlot(index, INTEGER, AddLong(value));
 }
 void MultifieldBuilder::setSlot(unsigned index, long value) {
-   setSlot(index, INTEGER, value);
+   setSlot(index, (PointerAddress)value);
 }
 void MultifieldBuilder::setSlot(unsigned index, int value) {
-   setSlot(index, INTEGER, value);
+   setSlot(index, (PointerAddress)value);
 }
 void MultifieldBuilder::setSlot(unsigned index, unsigned value) {
-   setSlot(index, INTEGER, value);
+   setSlot(index, (PointerAddress)value);
 }
 void MultifieldBuilder::setSlot(unsigned index, float value) {
    setSlot(index, FLOAT, AddDouble(value));

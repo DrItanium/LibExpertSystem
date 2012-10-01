@@ -9,7 +9,7 @@ using namespace llvm;
 class TypeLibrarian {
    private:
       struct cmp_str {
-         bool operator()(char const *a, char const *b) {
+         bool operator()(const char *a, const char *b) const {
             return std::strcmp(a, b) < 0;
          }
       };

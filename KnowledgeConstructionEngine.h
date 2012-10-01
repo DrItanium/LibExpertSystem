@@ -1,6 +1,7 @@
 #ifndef _knowledge_injection_engine_h
 #define _knowledge_injection_engine_h
 #include "Routers.h"
+#include "TypeLibrarian.h"
 #include "ConstructionTools.h"
 #include "ConstantConstruction.h"
 #include "InstructionConstruction.h"

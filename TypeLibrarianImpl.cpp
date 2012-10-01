@@ -1,4 +1,6 @@
 #include "TypeLibrarian.h"
+
+using namespace llvm;
 TypeLibrarian::TypeLibrarian() {
    names = new std::map<char*, PointerAddress, cmp_str>(); 
 }

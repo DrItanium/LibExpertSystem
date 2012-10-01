@@ -1,10 +1,10 @@
-#ifndef _loop_builder_h
-#define _loop_builder_h
+#ifndef LOOP_CONSTRUCTION_H
+#define LOOP_CONSTRUCTION_H 
 #include "ConstructionTools.h"
+
 class CLIPSLoopBuilder : public CLIPSObjectBuilder {
    public:
-      CLIPSLoopBuilder(std::string nm, FunctionNamer& namer, TypeLibrarian& ti) : CLIPSObjectBuilder(nm, "Loop", namer, ti) { }
+      CLIPSLoopBuilder(std::string nm, FunctionNamer& namer, TypeLibrarian& ti);
       void setFields(Loop* loop, char* parent);
-      void build(Loop* loop, char* parent);
 };
 #endif

@@ -2,6 +2,7 @@
 #include "llvm/ADT/SmallSet.h"
 #include "llvm/ADT/DenseMap.h"
 #include "MultifieldBuilder.h"
+#include "TypeLibrarian.h"
 
 void CLIPSInstructionBuilder::setFields(Instruction* instruction, char* parent, bool addDestinationRegisters) {
    User* tmp = (User*)instruction;

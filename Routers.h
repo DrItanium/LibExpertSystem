@@ -27,7 +27,6 @@
 #include "llvm/Operator.h"
 #include "llvm/Function.h"
 #include "llvm/Analysis/LoopInfo.h"
-#include "FunctionNamer.h"
 #include "TypeLibrarian.h"
 #include "llvm/Support/Casting.h"
 extern "C" {
