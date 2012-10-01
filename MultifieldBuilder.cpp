@@ -14,18 +14,20 @@ void MultifieldBuilder::setValue(unsigned index, void* value) {
 void MultifieldBuilder::setSlot(unsigned index, int type, void* value) {
    setType(index, type);
    setValue(index, value);
+//   printf("setSlot(%d, %d, value)\n", index, type);
+   numberPopulated++;
 }
 void MultifieldBuilder::setSlot(unsigned index, PointerAddress value) {
    setSlot(index, INTEGER, AddLong(value));
 }
 void MultifieldBuilder::setSlot(unsigned index, long value) {
-   setSlot(index, (PointerAddress)value);
+   setSlot(index, INTEGER, AddLong(value));
 }
 void MultifieldBuilder::setSlot(unsigned index, int value) {
-   setSlot(index, (PointerAddress)value);
+   setSlot(index, INTEGER, AddLong(value));
 }
 void MultifieldBuilder::setSlot(unsigned index, unsigned value) {
-   setSlot(index, (PointerAddress)value);
+   setSlot(index, INTEGER, AddLong(value));
 }
 void MultifieldBuilder::setSlot(unsigned index, float value) {
    setSlot(index, FLOAT, AddDouble(value));
@@ -62,5 +64,5 @@ void MultifieldBuilder::bindToDataObjectPointer(DATA_OBJECT_PTR ptr) {
    SetpType(ptr, MULTIFIELD);
    SetpValue(ptr, multifieldPointer); 
    SetpDOBegin(ptr, 1);
-   SetpDOEnd(ptr, count);
+   SetpDOEnd(ptr, numberPopulated);
 }

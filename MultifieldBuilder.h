@@ -37,10 +37,12 @@ class MultifieldBuilder {
    private:
       void* multifieldPointer;
       unsigned count;
+      unsigned numberPopulated;
    public:
       MultifieldBuilder(unsigned size) {
          multifieldPointer = CreateMultifield(size);
          count = size;
+         numberPopulated = 0;
       }
       unsigned getCount();
       void* getMultifieldPointer();
