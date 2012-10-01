@@ -1,7 +1,7 @@
 #include "OperatorConstruction.h"
 
 void CLIPSOperatorBuilder::addFields(Operator* v, char* parent) {
-	CLIPSUserBuilder::addFields((User*)v, parent);
+	CLIPSUserBuilder::setFields((User*)v, parent);
 }
 void CLIPSOverflowingBinaryOperatorBuilder::addFields(OverflowingBinaryOperator* v, char* parent) {
 	CLIPSOperatorBuilder::addFields((Operator*)v, parent);

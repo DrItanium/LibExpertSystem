@@ -3,7 +3,7 @@
 #include "ConstructionTools.h"
 class CLIPSArgumentBuilder : public CLIPSValueBuilder {
    public:
-      CLIPSArgumentBuilder(std::string nm, FunctionNamer& namer) : CLIPSValueBuilder(nm, "Argument", namer) { }
+      CLIPSArgumentBuilder(std::string nm, FunctionNamer& namer, TypeLibrarian& tl) : CLIPSValueBuilder(nm, "Argument", namer, tl) { }
       void setFields(Argument* arg, char* parent) {
          CLIPSValueBuilder::setFields((Value*)arg, parent);
          setField("Index", arg->getArgNo());

@@ -4,7 +4,7 @@
 using namespace llvm;
 class CLIPSConstantBuilder : public CLIPSUserBuilder {
    public:
-      CLIPSConstantBuilder(std::string nm, std::string ty, FunctionNamer& namer) : CLIPSUserBuilder(nm, ty, namer) { }
+      CLIPSConstantBuilder(std::string nm, std::string ty, FunctionNamer& namer, TypeLibrarian& tl) : CLIPSUserBuilder(nm, ty, namer, tl) { }
       void setFields(Constant* cnst, char* parent) {
          CLIPSUserBuilder::setFields((User*)cnst, parent);
          if(cnst->isNullValue()) setFieldTrue("IsNullValue"); 
@@ -17,7 +17,7 @@ class CLIPSConstantBuilder : public CLIPSUserBuilder {
 
 class CLIPSBlockAddressBuilder : public CLIPSConstantBuilder {
    public:
-      CLIPSBlockAddressBuilder(std::string nm, FunctionNamer& namer) : CLIPSConstantBuilder(nm, "BlockAddress", namer) { }
+      CLIPSBlockAddressBuilder(std::string nm, FunctionNamer& namer, TypeLibrarian& tl) : CLIPSConstantBuilder(nm, "BlockAddress", namer, tl) { }
       void setFields(BlockAddress* addr, char* parent) {
          CLIPSConstantBuilder::setFields((Constant*)addr, parent); 
          setField("Target", addr->getBasicBlock()->getName());
@@ -26,14 +26,14 @@ class CLIPSBlockAddressBuilder : public CLIPSConstantBuilder {
 };
 class CLIPSConstantAggregateZeroBuilder : public CLIPSConstantBuilder {
    public:
-      CLIPSConstantAggregateZeroBuilder(std::string nm, FunctionNamer& namer) : CLIPSConstantBuilder(nm, "ConstantAggregateZero", namer) { }
+      CLIPSConstantAggregateZeroBuilder(std::string nm, FunctionNamer& namer, TypeLibrarian& tl) : CLIPSConstantBuilder(nm, "ConstantAggregateZero", namer, tl) { }
       void setFields(ConstantAggregateZero* addr, char* parent) {
          CLIPSConstantBuilder::setFields((Constant*)addr, parent); 
       }
 };
 class CLIPSConstantArrayBuilder : public CLIPSConstantBuilder {
    public:
-      CLIPSConstantArrayBuilder(std::string nm, FunctionNamer& namer) : CLIPSConstantBuilder(nm, "ConstantArray", namer) { }
+      CLIPSConstantArrayBuilder(std::string nm, FunctionNamer& namer, TypeLibrarian& tl) : CLIPSConstantBuilder(nm, "ConstantArray", namer, tl) { }
       void setFields(ConstantArray* addr, char* parent) {
          CLIPSConstantBuilder::setFields((Constant*)addr, parent); 
       }
@@ -46,7 +46,7 @@ class CLIPSConstantArrayBuilder : public CLIPSConstantBuilder {
  {
 
  public:
- CLIPSConstantDataSequentialBuilder(std::string nm, FunctionNamer& namer) : CLIPSConstantBuilder(nm, "ConstantDataSequential", namer) { }
+ CLIPSConstantDataSequentialBuilder(std::string nm, FunctionNamer& namer, TypeLibrarian& tl) : CLIPSConstantBuilder(nm, "ConstantDataSequential", namer, tl) { }
  void setFields(ConstantDataSequential* addr, char* parent)
  {
  CLIPSConstantBuilder::setFields((Constant*)addr, parent); 
@@ -67,7 +67,7 @@ class CLIPSConstantArrayBuilder : public CLIPSConstantBuilder {
 
 class CLIPSConstantExpressionBuilder : public CLIPSConstantBuilder {
    public:
-      CLIPSConstantExpressionBuilder(std::string nm, FunctionNamer& namer) : CLIPSConstantBuilder(nm, "ConstantExpression", namer) { }
+      CLIPSConstantExpressionBuilder(std::string nm, FunctionNamer& namer, TypeLibrarian& tl) : CLIPSConstantBuilder(nm, "ConstantExpression", namer, tl) { }
       void setFields(ConstantExpr* addr, char* parent) {
          CLIPSConstantBuilder::setFields((Constant*)addr, parent); 
          if(addr->isCast()) setFieldTrue("IsCast");
@@ -93,7 +93,7 @@ class CLIPSConstantExpressionBuilder : public CLIPSConstantBuilder {
  class CLIPSBinaryConstantExpressionBuilder : public CLIPSConstantExpressionBuilder
  {
  public:
- CLIPSBinaryConstantExpressionBuilder(std::string nm, FunctionNamer& namer) : CLIPSConstantExpressionBuilder(nm, "BinaryConstantExpression", namer) { }
+ CLIPSBinaryConstantExpressionBuilder(std::string nm, FunctionNamer& namer, TypeLibrarian& tl) : CLIPSConstantExpressionBuilder(nm, "BinaryConstantExpression", namer, tl) { }
  void setFields(BinaryConstantExpr* addr, char* parent)
  {
  CLIPSConstantBuilder::setFields((Constant*)addr, parent); 
@@ -106,7 +106,7 @@ class CLIPSConstantExpressionBuilder : public CLIPSConstantBuilder {
  class CLIPSCompareConstantExpressionBuilder : public CLIPSConstantExpressionBuilder
  {
  public:
- CLIPSCompareConstantExpressionBuilder(std::string nm, FunctionNamer& namer) : CLIPSConstantExpressionBuilder(nm, "CompareConstantExpression", namer) { }
+ CLIPSCompareConstantExpressionBuilder(std::string nm, FunctionNamer& namer, TypeLibrarian& tl) : CLIPSConstantExpressionBuilder(nm, "CompareConstantExpression", namer, tl) { }
  void setFields(CompareConstantExpr* addr, char* parent)
  {
  CLIPSConstantBuilder::setFields((Constant*)addr, parent); 
@@ -121,7 +121,7 @@ class CLIPSConstantExpressionBuilder : public CLIPSConstantBuilder {
 
 class CLIPSConstantFloatingPointBuilder : public CLIPSConstantBuilder {
    public:
-      CLIPSConstantFloatingPointBuilder(std::string nm, FunctionNamer& namer) : CLIPSConstantBuilder(nm, "ConstantFloatingPoint", namer) { }
+      CLIPSConstantFloatingPointBuilder(std::string nm, FunctionNamer& namer, TypeLibrarian& tl) : CLIPSConstantBuilder(nm, "ConstantFloatingPoint", namer, tl) { }
       void setFields(ConstantFP* addr, char* parent) {
          CLIPSConstantBuilder::setFields((Constant*)addr, parent); 
          if(addr->isZero()) {
@@ -139,7 +139,7 @@ class CLIPSConstantFloatingPointBuilder : public CLIPSConstantBuilder {
 
 class CLIPSConstantIntegerBuilder : public CLIPSConstantBuilder {
    public:
-      CLIPSConstantIntegerBuilder(std::string nm, FunctionNamer& namer) : CLIPSConstantBuilder(nm, "ConstantInteger", namer) { }
+      CLIPSConstantIntegerBuilder(std::string nm, FunctionNamer& namer, TypeLibrarian& tl) : CLIPSConstantBuilder(nm, "ConstantInteger", namer, tl) { }
       void setFields(ConstantInt* addr, char* parent) {
          CLIPSConstantBuilder::setFields((Constant*)addr, parent); 
          setField("Width", addr->getBitWidth());
@@ -161,7 +161,7 @@ class CLIPSConstantIntegerBuilder : public CLIPSConstantBuilder {
 
 class CLIPSConstantPointerNullBuilder : public CLIPSConstantBuilder {
    public:
-      CLIPSConstantPointerNullBuilder(std::string nm, FunctionNamer& namer) : CLIPSConstantBuilder(nm, "ConstantPointerNull", namer) { }
+      CLIPSConstantPointerNullBuilder(std::string nm, FunctionNamer& namer, TypeLibrarian& tl) : CLIPSConstantBuilder(nm, "ConstantPointerNull", namer, tl) { }
       void setFields(ConstantPointerNull* addr, char* parent) {
          CLIPSConstantBuilder::setFields((Constant*)addr, parent); 
       }
@@ -169,7 +169,7 @@ class CLIPSConstantPointerNullBuilder : public CLIPSConstantBuilder {
 
 class CLIPSConstantStructBuilder : public CLIPSConstantBuilder {
    public:
-      CLIPSConstantStructBuilder(std::string nm, FunctionNamer& namer) : CLIPSConstantBuilder(nm, "ConstantStruct", namer) { }
+      CLIPSConstantStructBuilder(std::string nm, FunctionNamer& namer, TypeLibrarian& tl) : CLIPSConstantBuilder(nm, "ConstantStruct", namer, tl) { }
       void setFields(ConstantStruct* addr, char* parent) {
          CLIPSConstantBuilder::setFields((Constant*)addr, parent); 
       }
@@ -177,7 +177,7 @@ class CLIPSConstantStructBuilder : public CLIPSConstantBuilder {
 
 class CLIPSConstantVectorBuilder : public CLIPSConstantBuilder {
    public:
-      CLIPSConstantVectorBuilder(std::string nm, FunctionNamer& namer) : CLIPSConstantBuilder(nm, "ConstantVector", namer) { }
+      CLIPSConstantVectorBuilder(std::string nm, FunctionNamer& namer, TypeLibrarian& tl) : CLIPSConstantBuilder(nm, "ConstantVector", namer, tl) { }
       void setFields(ConstantVector* addr, char* parent) {
          CLIPSConstantBuilder::setFields((Constant*)addr, parent); 
          setField("SplatValue", Route(addr->getSplatValue(), getNamer()));
@@ -187,7 +187,7 @@ class CLIPSConstantVectorBuilder : public CLIPSConstantBuilder {
 class CLIPSGlobalValueBuilder : public CLIPSConstantBuilder
 {
    public:
-      CLIPSGlobalValueBuilder(std::string nm, std::string ty, FunctionNamer& namer) : CLIPSConstantBuilder(nm, ty, namer) { }
+      CLIPSGlobalValueBuilder(std::string nm, std::string ty, FunctionNamer& namer, TypeLibrarian& tl) : CLIPSConstantBuilder(nm, ty, namer, tl) { }
       void setFields(GlobalValue* addr, char* parent) {
          CLIPSConstantBuilder::setFields((Constant*)addr, parent); 
          //setField("Alignment", addr->getAlignment());
@@ -222,8 +222,8 @@ class CLIPSGlobalValueBuilder : public CLIPSConstantBuilder
 
 class CLIPSGlobalAliasBuilder : public CLIPSGlobalValueBuilder {
    public:
-      CLIPSGlobalAliasBuilder(std::string nm, FunctionNamer& namer) 
-         : CLIPSGlobalValueBuilder(nm, "GlobalAlias", namer) { }
+      CLIPSGlobalAliasBuilder(std::string nm, FunctionNamer& namer, TypeLibrarian& tl) 
+         : CLIPSGlobalValueBuilder(nm, "GlobalAlias", namer, tl) { }
       void setFields(GlobalAlias* addr, char* parent) {
          CLIPSGlobalValueBuilder::setFields((GlobalValue*)addr, parent); 
          setField("Aliasee", Route(addr->getAliasee(), getNamer()));
@@ -232,8 +232,8 @@ class CLIPSGlobalAliasBuilder : public CLIPSGlobalValueBuilder {
 
 class CLIPSGlobalVariableBuilder : public CLIPSGlobalValueBuilder {
    public:
-      CLIPSGlobalVariableBuilder(std::string nm, FunctionNamer& namer) 
-         : CLIPSGlobalValueBuilder(nm, "GlobalVariable", namer) { }
+      CLIPSGlobalVariableBuilder(std::string nm, FunctionNamer& namer, TypeLibrarian& tl) 
+         : CLIPSGlobalValueBuilder(nm, "GlobalVariable", namer, tl) { }
 
       void setFields(GlobalVariable* addr, char* parent) {
          CLIPSGlobalValueBuilder::setFields((GlobalValue*)addr, parent); 
@@ -250,8 +250,8 @@ class CLIPSGlobalVariableBuilder : public CLIPSGlobalValueBuilder {
 
 class CLIPSUndefValueBuilder : public CLIPSConstantBuilder {
    public:
-      CLIPSUndefValueBuilder(std::string nm, FunctionNamer& namer) : 
-         CLIPSConstantBuilder(nm, "UndefValue", namer) { }
+      CLIPSUndefValueBuilder(std::string nm, FunctionNamer& namer, TypeLibrarian& tl) : 
+         CLIPSConstantBuilder(nm, "UndefValue", namer, tl) { }
 
       void setFields(UndefValue* addr, char* parent) {
          CLIPSConstantBuilder::setFields((Constant*)addr, parent); 

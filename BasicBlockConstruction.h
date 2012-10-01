@@ -5,7 +5,7 @@
 
 class CLIPSBasicBlockBuilder : public CLIPSValueBuilder {
    public:
-      CLIPSBasicBlockBuilder(std::string nm, FunctionNamer& namer) : CLIPSValueBuilder(nm, "BasicBlock", namer) { }
+      CLIPSBasicBlockBuilder(std::string nm, FunctionNamer& namer, TypeLibrarian& tl) : CLIPSValueBuilder(nm, "BasicBlock", namer, tl) { }
       void setFields(BasicBlock* bb, char* parent, bool constructInstructions = true) {
          CLIPSValueBuilder::setFields((Value*)bb, parent);
          char* name = (char*)bb->getName().data();
