@@ -16,7 +16,7 @@ class CLIPSRegionBuilder : public CLIPSObjectBuilder {
 			li = l;
 		}
 		LoopInfo* getLoopInfo() { return li; }
-		void addFields(Region* region, char* parent);
+		void setFields(Region* region, char* parent);
 };
 
 #endif

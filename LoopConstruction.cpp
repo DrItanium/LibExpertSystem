@@ -1,9 +1,9 @@
 #include "LoopConstruction.h"
 
-void CLIPSLoopBuilder::addFields(Loop* loop, char* parent) {
+void CLIPSLoopBuilder::setFields(Loop* loop, char* parent) {
    char* t = (char*)getName().c_str();
    FunctionNamer& n = getNamer();
-   CLIPSObjectBuilder::addFields((PointerAddress)loop, parent);
+   CLIPSObjectBuilder::setFields((PointerAddress)loop, parent);
    BasicBlock* latch = loop->getLoopLatch();
    BasicBlock* header = loop->getHeader();
    BasicBlock* loopPredecessor = loop->getLoopPredecessor();

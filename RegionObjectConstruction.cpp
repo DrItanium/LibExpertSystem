@@ -1,8 +1,8 @@
 #include "RegionObjectConstruction.h"
-void CLIPSRegionBuilder::addFields(Region* region, char* parent) {
+void CLIPSRegionBuilder::setFields(Region* region, char* parent) {
    //we should edit the parent to be a loop if it turns out that we
    //are part of a loop
-   CLIPSObjectBuilder::addFields((PointerAddress)region, parent);
+   CLIPSObjectBuilder::setFields((PointerAddress)region, parent);
    addField("Depth", region->getDepth());
    if(region->isTopLevelRegion()) addTrueField("IsTopLevelRegion");
    if(region->isSimple()) addTrueField("IsSimple");

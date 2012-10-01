@@ -7,6 +7,7 @@ void CLIPSInstructionBuilder::setFields(Instruction* instruction, char* parent, 
    User* tmp = (User*)instruction;
    CLIPSUserBuilder::setFields(tmp, parent);
    FunctionNamer& namer = getNamer();
+   TypeLibrarian& lib = getLibrarian();
    std::string par (parent);
    PointerAddress pa = namer.registerInstructionWithBasicBlock(par);
    setField("TimeIndex", pa);
@@ -40,7 +41,7 @@ void CLIPSInstructionBuilder::setFields(Instruction* instruction, char* parent, 
          } else if(isa<Function>(target) || isa<Instruction>(target)) {
             builder.setSlot(index, target->getName());
          } else {
-            builder.setSlot(index, Route(target, namer));
+            builder.setSlot(index, Route(target, namer, lib));
          }
       }
       MultifieldBuilder* bPtr = &builder;
@@ -54,6 +55,7 @@ void CLIPSPHINodeBuilder::setFields(PHINode* instruction, char* parent)
    CLIPSValueBuilder::setFields((Value*)instruction, parent);
    std::string par(parent);
    FunctionNamer& namer = getNamer();
+   TypeLibrarian& lib = getLibrarian();
    PointerAddress pa = namer.registerInstructionWithBasicBlock(par);
    setField("TimeIndex", pa);
    setField("Operation", instruction->getOpcodeName());
@@ -83,7 +85,7 @@ void CLIPSPHINodeBuilder::setFields(PHINode* instruction, char* parent)
       } else if(Instruction* inst = dyn_cast<Instruction>(target)) {
          operands.setSlot(index, inst->getName());
       } else {
-         operands.setSlot(index, Route(target, namer));
+         operands.setSlot(index, Route(target, namer, lib));
       }
       operands.setSlot(index + 1, from->getName());
    }
@@ -99,7 +101,7 @@ void CLIPSPHINodeBuilder::setFields(PHINode* instruction, char* parent)
          } else if(isa<Function>(target) || isa<Instruction>(target)) {
             consumers.setSlot(index, target->getName());
          } else {
-            consumers.setSlot(index, Route(target, namer));
+            consumers.setSlot(index, Route(target, namer, lib));
          }
       }
       setField("Consumers", &consumers);
@@ -116,7 +118,7 @@ void CLIPSStoreInstructionBuilder::setFields(StoreInst* target, char* parent) {
    if(pointer->hasName()) {
       setField("DestinationRegisters", pointer->getName());
    } else {
-      setField("DestinationRegisters", Route(pointer, getNamer()));
+      setField("DestinationRegisters", Route(pointer, getNamer(), getLibrarian()));
    }
 }
 void CLIPSBinaryOperatorBuilder::setFields(BinaryOperator* target, char* parent) {
@@ -144,9 +146,10 @@ void CLIPSCallInstructionBuilder::setFields(CallInst* target, char* parent) {
       unsigned size = target->getNumArgOperands();
       MultifieldBuilder builder(size); 
       FunctionNamer& namer = getNamer();
+      TypeLibrarian& tl = getLibrarian();
       for(unsigned i = 0; i < size; ++i) {
          //add function args
-         builder.setSlot(i + 1, Route(target->getArgOperand(i), namer));
+         builder.setSlot(i + 1, Route(target->getArgOperand(i), namer, tl));
       }
       setField("ArgumentOperands", &builder);
    }
@@ -164,7 +167,7 @@ void CLIPSLoadInstructionBuilder::setFields(LoadInst* inst, char* parent) {
 }
 void CLIPSExtractValueInstructionBuilder::setFields(ExtractValueInst* inst, char* parent) {
    CLIPSUnaryInstructionBuilder::setFields((UnaryInstruction*)inst, parent);
-   setField("AggregateOperand", Route(inst->getAggregateOperand(), getNamer()));
+   setField("AggregateOperand", Route(inst->getAggregateOperand(), getNamer(), getLibrarian()));
    MultifieldBuilder builder(inst->getNumIndices());
    unsigned index = 1;
    for(ExtractValueInst::idx_iterator i = inst->idx_begin(), e = inst->idx_end();
@@ -182,15 +185,16 @@ void CLIPSCastInstructionBuilder::setFields(CastInst* inst, char* parent) {
    if(inst->isIntegerCast()) setFieldTrue("IsIntegerCast");
    if(inst->isLosslessCast()) setFieldTrue("IsLosslessCast");
    FunctionNamer& namer = getNamer();
-   setField("SourceType", Route(inst->getSrcTy(), namer)); 
-   setField("DestinationType", Route(inst->getDestTy(), namer));
+   TypeLibrarian& tl = getLibrarian();
+   setField("SourceType", Route(inst->getSrcTy(), namer, tl)); 
+   setField("DestinationType", Route(inst->getDestTy(), namer, tl));
 }
 void CLIPSAllocaInstructionBuilder::setFields(AllocaInst* inst, char* parent) {
    CLIPSUnaryInstructionBuilder::setFields((UnaryInstruction*)inst, parent);
    if(inst->isArrayAllocation()) setFieldTrue("IsArrayAllocation");
    if(inst->isStaticAlloca()) setFieldTrue("IsStaticAllocation");
    setField("Alignment", inst->getAlignment());
-   setField("ArraySize", Route(inst->getArraySize(), getNamer()));
+   setField("ArraySize", Route(inst->getArraySize(), getNamer(), getLibrarian()));
 }
 void CLIPSUnaryInstructionBuilder::setFields(UnaryInstruction* inst, char* parent) {
    CLIPSInstructionBuilder::setFields((Instruction*)inst, parent);
@@ -198,9 +202,10 @@ void CLIPSUnaryInstructionBuilder::setFields(UnaryInstruction* inst, char* paren
 void CLIPSSelectInstructionBuilder::setFields(SelectInst* inst, char* parent) {
    CLIPSInstructionBuilder::setFields((Instruction*)inst, parent);
    FunctionNamer& namer = getNamer();
-   setField("Condition", Route(inst->getCondition(), namer));
-   setField("TrueValue", Route(inst->getTrueValue(), namer));
-   setField("FalseValue", Route(inst->getFalseValue(), namer));
+   TypeLibrarian& tl = getLibrarian();
+   setField("Condition", Route(inst->getCondition(), namer, tl));
+   setField("TrueValue", Route(inst->getTrueValue(), namer, tl));
+   setField("FalseValue", Route(inst->getFalseValue(), namer, tl));
 }
 void CLIPSUnreachableInstructionBuilder::setFields(UnreachableInst* instruction, char* parent) {
    CLIPSTerminatorInstructionBuilder::setFields((TerminatorInst*)instruction, parent);
@@ -245,12 +250,12 @@ void CLIPSBranchInstructionBuilder::setFields(BranchInst* inst, char* parent) {
    if(inst->isUnconditional()) setFieldTrue("IsUnconditional");
    if(inst->isConditional()) {
       setFieldTrue("IsConditional");
-      setField("Condition", Route(inst->getCondition(), getNamer()));
+      setField("Condition", Route(inst->getCondition(), getNamer(), getLibrarian()));
    }
 }
 void CLIPSIndirectBranchInstructionBuilder::setFields(IndirectBrInst* inst, char* parent) {
    CLIPSTerminatorInstructionBuilder::setFields((TerminatorInst*)inst, parent);
-   setField("Address", Route(inst->getAddress(), getNamer()));
+   setField("Address", Route(inst->getAddress(), getNamer(), getLibrarian()));
 }
 void CLIPSInvokeInstructionBuilder::setFields(InvokeInst* target, char* parent) {
    CLIPSTerminatorInstructionBuilder::setFields((TerminatorInst*)target, parent);
@@ -274,8 +279,9 @@ void CLIPSInvokeInstructionBuilder::setFields(InvokeInst* target, char* parent) 
 
       MultifieldBuilder builder(total);
       FunctionNamer& namer = getNamer();
+      TypeLibrarian& tl = getLibrarian();
       for(unsigned i = 0;i < total; ++i) {
-         builder.setSlot(i + 1, Route(target->getArgOperand(i), namer));
+         builder.setSlot(i + 1, Route(target->getArgOperand(i), namer, tl));
       }
       MultifieldBuilder* bPtr = &builder;
       setField("Arguments", bPtr);
@@ -287,12 +293,13 @@ void CLIPSResumeInstructionBuilder::setFields(ResumeInst* inst, char* parent) {
 void CLIPSReturnInstructionBuilder::setFields(ReturnInst* inst, char* parent) {
    CLIPSTerminatorInstructionBuilder::setFields((TerminatorInst*)inst, parent);
    Value* result = inst->getReturnValue();
-   if(result != 0) setField("ReturnValue", Route(result, getNamer()));
+   if(result != 0) setField("ReturnValue", Route(result, getNamer(), getLibrarian()));
 }
 void CLIPSSwitchInstructionBuilder::setFields(SwitchInst* inst, char* parent) {
    CLIPSValueBuilder::setFields((Value*)inst, parent);
    std::string par(parent);
    FunctionNamer& namer = getNamer();
+   TypeLibrarian& tl = getLibrarian();
    PointerAddress pa = namer.registerInstructionWithBasicBlock(par);
    setField("TimeIndex", pa);
    setField("Operation", (char*) inst->getOpcodeName());
@@ -308,7 +315,7 @@ void CLIPSSwitchInstructionBuilder::setFields(SwitchInst* inst, char* parent) {
    if(inst->isLogicalShift()) setFieldTrue("IsLogicalShift");
    if(inst->isAssociative()) setFieldTrue("IsAssociative");
    if(inst->isCommutative()) setFieldTrue("IsCommutative");
-   setField("Condition", Route(inst->getCondition(), getNamer()));
+   setField("Condition", Route(inst->getCondition(), namer, tl));
    setField("DefaultDestination", inst->getDefaultDest()->getName());
    unsigned succCount = inst->getNumSuccessors();
    if(succCount > 0) {

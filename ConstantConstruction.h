@@ -180,7 +180,7 @@ class CLIPSConstantVectorBuilder : public CLIPSConstantBuilder {
       CLIPSConstantVectorBuilder(std::string nm, FunctionNamer& namer, TypeLibrarian& tl) : CLIPSConstantBuilder(nm, "ConstantVector", namer, tl) { }
       void setFields(ConstantVector* addr, char* parent) {
          CLIPSConstantBuilder::setFields((Constant*)addr, parent); 
-         setField("SplatValue", Route(addr->getSplatValue(), getNamer()));
+         setField("SplatValue", Route(addr->getSplatValue(), getNamer(), getLibrarian()));
       }
 };
 
@@ -226,7 +226,7 @@ class CLIPSGlobalAliasBuilder : public CLIPSGlobalValueBuilder {
          : CLIPSGlobalValueBuilder(nm, "GlobalAlias", namer, tl) { }
       void setFields(GlobalAlias* addr, char* parent) {
          CLIPSGlobalValueBuilder::setFields((GlobalValue*)addr, parent); 
-         setField("Aliasee", Route(addr->getAliasee(), getNamer()));
+         setField("Aliasee", Route(addr->getAliasee(), getNamer(), getLibrarian()));
       }
 };
 
@@ -239,7 +239,7 @@ class CLIPSGlobalVariableBuilder : public CLIPSGlobalValueBuilder {
          CLIPSGlobalValueBuilder::setFields((GlobalValue*)addr, parent); 
          if(addr->hasInitializer()) {
             setFieldTrue("HasInitializer");
-            setField("Initializer", Route(addr->getInitializer(), getNamer()));
+            setField("Initializer", Route(addr->getInitializer(), getNamer(), getLibrarian()));
          }
          if(addr->hasDefinitiveInitializer()) setFieldTrue("HasDefinitiveInitializer");
          if(addr->hasUniqueInitializer()) setFieldTrue("HasUniqueInitializer");

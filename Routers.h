@@ -28,6 +28,7 @@
 #include "llvm/Function.h"
 #include "llvm/Analysis/LoopInfo.h"
 #include "FunctionNamer.h"
+#include "TypeLibrarian.h"
 #include "llvm/Support/Casting.h"
 extern "C" {
 #include "clips.h"
@@ -41,8 +42,8 @@ std::string Route(Constant* cnst, char* parent, FunctionNamer& namer, TypeLibrar
 std::string Route(Instruction* inst, char* parent, FunctionNamer& namer, TypeLibrarian& tl);
 std::string Route(Type* t, FunctionNamer& namer, TypeLibrarian& tl);
 std::string Route(Operator* op, char* parent, FunctionNamer& namer, TypeLibrarian& tl);
-std::string Route(BasicBlock* bb, char* parent, FunctionNamer& namer, bool constructInstructions = true);
-std::string Route(Region* region, char* parent, FunctionNamer& namer, LoopInfo* li);
+std::string Route(BasicBlock* bb, char* parent, FunctionNamer& namer, TypeLibrarian& tl, bool constructInstructions = true);
+std::string Route(Region* region, char* parent, FunctionNamer& namer, TypeLibrarian& tl, LoopInfo* li);
 std::string Route(Argument* arg, char* parent, FunctionNamer& namer, TypeLibrarian& tl);
 std::string Route(Loop* loop, char* parent, FunctionNamer& namer, TypeLibrarian& tl);
 void RouteLoopInfo(LoopInfo& li, char* parent, FunctionNamer& namer, TypeLibrarian& tl);

@@ -6,6 +6,7 @@ class CLIPSTypeBuilder : public CLIPSObjectBuilder {
 		CLIPSTypeBuilder(std::string nm, FunctionNamer& namer, TypeLibrarian& lib, std::string ty = "LLVMType") : CLIPSObjectBuilder(nm, ty, namer, lib) { }
 		void setFields(Type* type) {
          FunctionNamer& namer = getNamer();
+         TypeLibrarian& tl = getLibrarian();
 			PointerAddress pointer = (PointerAddress)type;
 			if(!namer.pointerRegistered(pointer)) {
 				std::pair<PointerAddress, std::string> pair (pointer, getName());
@@ -56,7 +57,7 @@ class CLIPSTypeBuilder : public CLIPSObjectBuilder {
 				for(Type::subtype_iterator i = type->subtype_begin(),
 						e = type->subtype_end(); i != e; ++i, ++index) {
 					Type* t = (*i);
-               b0.setSlot(index, Route(t, namer));
+               b0.setSlot(index, Route(t, namer, tl));
 				}
 				//closeField();
 			}

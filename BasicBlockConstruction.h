@@ -10,6 +10,7 @@ class CLIPSBasicBlockBuilder : public CLIPSValueBuilder {
          CLIPSValueBuilder::setFields((Value*)bb, parent);
          char* name = (char*)bb->getName().data();
          FunctionNamer& namer = getNamer();
+         TypeLibrarian& tl = getLibrarian();
          namer.registerBasicBlock(name);
          if(bb->isLandingPad()) setFieldTrue("IsLandingPad");
          if(bb->hasAddressTaken()) setFieldTrue("HasAddressTaken");
@@ -41,7 +42,7 @@ class CLIPSBasicBlockBuilder : public CLIPSValueBuilder {
             unsigned index = 1;
             for(BasicBlock::iterator i = bb->begin(), e = bb->end(); i != e; ++i, ++index) {
                Instruction* inst = i;
-               std::string res = Route(inst, name, namer);
+               std::string res = Route(inst, name, namer, tl);
                builder.setSlot(index, res);
             }
             setField("Contents", &builder);

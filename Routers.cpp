@@ -3,23 +3,15 @@
 #include "KnowledgeConstructionEngine.h"
 #include "llvm/Metadata.h"
 #define DefaultBuilderAction(obj, name, parent) \
-   obj.open(); \
-obj.addFields(name, parent); \
-obj.close(); \
-obj.convertToKnowledge();
+obj.setFields(name, parent); 
+
 #define BuildUpFullExpression(type, ty, tgt) \
-   type vb (name, ty, namer); \
-vb.open(); \
-vb.addFields(tgt, parent); \
-vb.close(); \
-vb.convertToKnowledge();
+   type vb (name, ty, namer, tl); \
+vb.setFields(tgt, parent); 
 
 #define BuildUpExpression(type, tgt) \
-   type vb (name, namer); \
-vb.open(); \
-vb.addFields(tgt, parent); \
-vb.close(); \
-vb.convertToKnowledge();
+   type vb (name, namer, tl); \
+vb.setFields(tgt, parent);
 
 #define PointerFoundBody(v) std::string result(namer.getTranslationTable().lookup((PointerAddress)v)); return result;
 
@@ -33,115 +25,117 @@ free(n)
 
 char nil[4] = "nil";
 
-std::string Route(Value* val, char* parent, FunctionNamer& namer) {
+std::string Route(Value* val, char* parent, FunctionNamer& namer, TypeLibrarian& tl) {
    if(namer.pointerRegistered((PointerAddress)val)) {
       return namer.nameFromPointer((PointerAddress)val);
    } else {
-      if(User* u0 = dyn_cast<User>(val)) return Route(u0, parent, namer);
-      else if(BasicBlock* bb = dyn_cast<BasicBlock>(val)) return Route(bb, parent, namer);
-      else if(Argument* arg = dyn_cast<Argument>(val)) return Route(arg, parent, namer); 
+      if(User* u0 = dyn_cast<User>(val)) return Route(u0, parent, namer, tl);
+      else if(BasicBlock* bb = dyn_cast<BasicBlock>(val)) return Route(bb, parent, namer, tl);
+      else if(Argument* arg = dyn_cast<Argument>(val)) return Route(arg, parent, namer, tl); 
       else if(InlineAsm* iasm = dyn_cast<InlineAsm>(val)) {
          makeGensym(name);
-         CLIPSValueBuilder vb (name, "LLVMInlineAsm", namer);
-         vb.open();
-         vb.addFields(val, parent);
-         if(iasm->hasSideEffects()) vb.addTrueField("HasSideEffects");
-         if(iasm->isAlignStack()) vb.addTrueField("IsAlignStack");
+         CLIPSValueBuilder vb (name, "LLVMInlineAsm", namer, tl);
+         //vb.open();
+         vb.setFields(val, parent);
+         if(iasm->hasSideEffects()) vb.setFieldTrue("HasSideEffects");
+         if(iasm->isAlignStack()) vb.setFieldTrue("IsAlignStack");
          const std::string& aStr = iasm->getAsmString();
          const std::string& cnStr = iasm->getConstraintString();
-         vb.addStringField("AsmString", aStr);
-         vb.addStringField("ConstraintString", cnStr);
-         vb.close();
-         vb.convertToKnowledge();
+         vb.setField("AsmString", aStr, true);
+         vb.setField("ConstraintString", cnStr, true);
+         //vb.close();
+         //vb.convertToKnowledge();
          return name;
       } else if(MDNode* mdn = dyn_cast<MDNode>(val)) {
          makeGensym(name);
-         CLIPSValueBuilder vb (name, "LLVMMDNode", namer);
-         vb.open();
-         vb.addFields(val, parent);
-         if(mdn->isFunctionLocal()) vb.addTrueField("IsFunctionLocal");
+         CLIPSValueBuilder vb (name, "LLVMMDNode", namer, tl);
+         //vb.open();
+         vb.setFields(val, parent);
+         if(mdn->isFunctionLocal()) vb.setFieldTrue("IsFunctionLocal");
          const Function* fn = mdn->getFunction();
          if(fn != 0) {
-            vb.addField("TargetFunction", fn->getName());
+            vb.setField("TargetFunction", fn->getName());
          }
          unsigned total = mdn->getNumOperands();
          if(total > 0) {
             char* cName = (char*)name.c_str();
-            vb.openField("Operands");
-            for(unsigned i = 0; i < total; ++i) {
-               vb.appendValue(Route(mdn->getOperand(i), cName, namer));
+            MultifieldBuilder mb (total);
+            //vb.openField("Operands");
+            for(unsigned i = 0, index = 1; i < total; ++i, ++index) {
+               mb.setSlot(index, Route(mdn->getOperand(i), cName, namer, tl));
             }
-            vb.closeField();
+            vb.setField("Operands", &mb);
+            //vb.closeField();
          }
-         vb.close();
-         vb.convertToKnowledge();
+         //vb.close();
+         //vb.convertToKnowledge();
          return name;
 
       } else if(MDString* mds = dyn_cast<MDString>(val)) {
          makeGensym(name);
-         CLIPSValueBuilder vb(name, "LLVMMDString", namer);
-         vb.open();
-         vb.addFields(val, parent);
-         vb.addStringField("String", mds->getString());
-         vb.close();
-         vb.convertToKnowledge();
+         CLIPSValueBuilder vb(name, "LLVMMDString", namer, tl);
+         //vb.open();
+         vb.setFields(val, parent);
+         vb.setField("String", mds->getString(), true);
+         //vb.close();
+         //vb.convertToKnowledge();
          return name;
       } else {
          llvm::errs() << "WARNING: Found an unimplemented value " << *val << '\n';
          makeGensym(name);
-         CLIPSValueBuilder vb (name, "LLVMValue", namer);
-         vb.open();
-         vb.addFields(val, parent);
-         vb.close();
-         vb.convertToKnowledge();
+         CLIPSValueBuilder vb (name, "LLVMValue", namer, tl);
+         //vb.open();
+         vb.setFields(val, parent);
+         //vb.close();
+         //vb.convertToKnowledge();
          return name;
       }
    }
 }
-std::string Route(Argument* val, char* parent, FunctionNamer& namer) {
+std::string Route(Argument* val, char* parent, FunctionNamer& namer, TypeLibrarian& tl) {
    if(namer.pointerRegistered((PointerAddress)val)) {
       return namer.nameFromPointer((PointerAddress)val);
    } else {
       makeGensym(name);
-      CLIPSArgumentBuilder ab (name, namer);
+      CLIPSArgumentBuilder ab (name, namer, tl);
       DefaultBuilderAction(ab, val, parent);
       return name;
    }
 }
-std::string Route(Value* val, FunctionNamer& namer) {
+std::string Route(Value* val, FunctionNamer& namer, TypeLibrarian& tl) {
    if(Instruction* inst = dyn_cast<Instruction>(val)) {
-      return Route(inst, (char*)inst->getParent()->getName().data(), namer);
+      return Route(inst, (char*)inst->getParent()->getName().data(), namer, tl);
    } else {
-      return Route(val, nil, namer);
+      return Route(val, nil, namer, tl);
    }
 }
-std::string Route(Operator* oper, FunctionNamer& namer) {
-   return Route(oper, nil, namer);
+std::string Route(Operator* oper, FunctionNamer& namer, TypeLibrarian& tl) {
+   return Route(oper, nil, namer, tl);
 }
 
-std::string Route(Operator* val, char* parent, FunctionNamer& namer) {
+std::string Route(Operator* val, char* parent, FunctionNamer& namer, TypeLibrarian& tl) {
    if(namer.pointerRegistered((PointerAddress)val)) {
       return namer.nameFromPointer((PointerAddress)val);
    } else { 
       if(OverflowingBinaryOperator* op = dyn_cast<OverflowingBinaryOperator>(val)) {
          makeGensym(name);
-         CLIPSOverflowingBinaryOperatorBuilder vb (name, namer);
+         CLIPSOverflowingBinaryOperatorBuilder vb (name, namer, tl);
          DefaultBuilderAction(vb, op, parent);
          return name;
       } else if(PossiblyExactOperator* op = dyn_cast<PossiblyExactOperator>(val)) {
          makeGensym(name);
-         CLIPSPossiblyExactOperatorBuilder vb (name, namer);
+         CLIPSPossiblyExactOperatorBuilder vb (name, namer, tl);
          DefaultBuilderAction(vb, op, parent);
          return name;
       } else {
          makeGensym(name);
-         CLIPSOperatorBuilder vb (name, "Operator", namer);
+         CLIPSOperatorBuilder vb (name, "Operator", namer, tl);
          DefaultBuilderAction(vb, val, parent);
          return name;
       }
    }
 }
-std::string Route(Instruction* val, char* parent, FunctionNamer& namer) {
+std::string Route(Instruction* val, char* parent, FunctionNamer& namer, TypeLibrarian& tl) {
    if(namer.pointerRegistered((PointerAddress)val)) {
       return namer.nameFromPointer((PointerAddress)val);
    } else {
@@ -244,7 +238,7 @@ std::string Route(Instruction* val, char* parent, FunctionNamer& namer) {
       }
    }
 }
-std::string Route(Constant* val, char* parent, FunctionNamer& namer) {
+std::string Route(Constant* val, char* parent, FunctionNamer& namer, TypeLibrarian& tl) {
    if(namer.pointerRegistered((PointerAddress)val)) {
       return namer.nameFromPointer((PointerAddress)val);
    } else if(isa<Function>(val)) {
@@ -307,10 +301,10 @@ std::string Route(Constant* val, char* parent, FunctionNamer& namer) {
       }
    }
 }
-std::string Route(Constant* cnst, FunctionNamer& namer) {
-   return Route(cnst, nil, namer);
+std::string Route(Constant* cnst, FunctionNamer& namer, TypeLibrarian& tl) {
+   return Route(cnst, nil, namer, tl);
 }
-std::string Route(Type* t, FunctionNamer& namer) {
+std::string Route(Type* t, FunctionNamer& namer, TypeLibrarian& tl) {
    if(namer.pointerRegistered((PointerAddress)t)) {
       return namer.nameFromPointer((PointerAddress)t);
    } else {
@@ -319,89 +313,59 @@ std::string Route(Type* t, FunctionNamer& namer) {
       std::string id(n);
       free(n);
       if(FunctionType* ft = dyn_cast<FunctionType>(t)) {
-         CLIPSFunctionTypeBuilder a(id, namer);
-         a.open();
-         a.addFields(ft);
-         a.close();
-         a.convertToKnowledge();
+         CLIPSFunctionTypeBuilder a(id, namer, tl);
+         a.setFields(ft);
       } else if(IntegerType* it = dyn_cast<IntegerType>(t)) {
-         CLIPSIntegerTypeBuilder b(id, namer);
-         b.open();
-         b.addFields(it);
-         b.close();
-         b.convertToKnowledge();
+         CLIPSIntegerTypeBuilder b(id, namer, tl);
+         b.setFields(it);
       } else if(CompositeType* ct = dyn_cast<CompositeType>(t)) {
          if(StructType* st = dyn_cast<StructType>(ct)) {
-            CLIPSIntegerTypeBuilder c(id, namer);
-            c.open();
-            c.addFields(st);
-            c.close();
-            c.convertToKnowledge();
+            CLIPSIntegerTypeBuilder c(id, namer, tl);
+            c.setFields(st);
          } else if(SequentialType* qt = dyn_cast<SequentialType>(ct)) {
             if(ArrayType* at = dyn_cast<ArrayType>(qt)) {
-               CLIPSArrayTypeBuilder d(id, namer);
-               d.open();
-               d.addFields(at);
-               d.close();
-               d.convertToKnowledge();
+               CLIPSArrayTypeBuilder d(id, namer, tl);
+               d.setFields(at);
             } else if(PointerType* pt = dyn_cast<PointerType>(qt)) {
-               CLIPSPointerTypeBuilder e(id, namer);
-               e.open();
-               e.addFields(pt);
-               e.close();
-               e.convertToKnowledge();
+               CLIPSPointerTypeBuilder e(id, namer, tl);
+               e.setFields(pt);
             } else if(VectorType* vt = dyn_cast<VectorType>(qt)) {
-               CLIPSVectorTypeBuilder f(id, namer);
-               f.open();
-               f.addFields(vt);
-               f.close();
-               f.convertToKnowledge();
+               CLIPSVectorTypeBuilder f(id, namer, tl);
+               f.setFields(vt);
             } else {
-               CLIPSSequentialTypeBuilder typ(id, namer);
-               typ.open();
-               typ.addFields(qt); 
-               typ.close();
-               typ.convertToKnowledge();
+               CLIPSSequentialTypeBuilder typ(id, namer, tl);
+               typ.setFields(qt); 
             }
          } else {
-            CLIPSCompositeTypeBuilder typ(id, namer);
-            typ.open();
-            typ.addFields(ct); 
-            typ.close();
-            typ.convertToKnowledge();
+            CLIPSCompositeTypeBuilder typ(id, namer, tl);
+            typ.setFields(ct); 
          }
       } else {
-         CLIPSTypeBuilder typ(id, namer);
-         typ.open();
-         typ.addFields(t); 
-         typ.close();
-         typ.convertToKnowledge();
+         CLIPSTypeBuilder typ(id, namer, tl);
+         typ.setFields(t); 
       }
       return id;
    }
 }
-std::string Route(User* user, char* parent, FunctionNamer& namer) {
+std::string Route(User* user, char* parent, FunctionNamer& namer, TypeLibrarian& tl) {
    if(Instruction* inst = dyn_cast<Instruction>(user)) {
-      return Route(inst, parent, namer);
+      return Route(inst, parent, namer, tl);
    } else if(Constant* cnst = dyn_cast<Constant>(user)) {
-      return Route(cnst, parent, namer);
+      return Route(cnst, parent, namer, tl);
    } else if(Operator* op = dyn_cast<Operator>(user)) {
-      return Route(op, parent, namer);
+      return Route(op, parent, namer, tl);
    } else {
       llvm::errs() << "WARNING: Found an unimplemented user " << *user << '\n';
       char* n = CharBuffer(64);
       namer.makeGensymID(n);
       std::string name(n);
       free(n);
-      CLIPSUserBuilder vb (name, "LLVMUser", namer);
-      vb.open();
-      vb.addFields(user, parent);
-      vb.close();
-      vb.convertToKnowledge();
+      CLIPSUserBuilder vb (name, "LLVMUser", namer, tl);
+      vb.setFields(user, parent);
       return name;
    }
 }
-void ModifyFunctionContents(Function& fn, FunctionNamer& namer) {
+void ModifyFunctionContents(Function& fn, FunctionNamer& namer, TypeLibrarian& tl) {
    for(llvm::Function::iterator i = fn.begin() , e = fn.end(); i != e; ++i) {
       llvm::BasicBlock* bb = i;
       if(!bb->hasName()) {
@@ -437,23 +401,20 @@ void ModifyFunctionContents(Function& fn, FunctionNamer& namer) {
    for(Function::arg_iterator s = fn.arg_begin(), f = fn.arg_end(); s != f; ++s) {
       Argument* a = s;
       //build it if we need to :)
-      Route(a, fnName, namer);
+      Route(a, fnName, namer, tl);
    }
 }
-std::string Route(BasicBlock* val, char* parent, FunctionNamer& namer, bool constructInstructions) {
+std::string Route(BasicBlock* val, char* parent, FunctionNamer& namer, TypeLibrarian& tl, bool constructInstructions) {
    if(namer.pointerRegistered((PointerAddress)val)) {
       return namer.nameFromPointer((PointerAddress)val);
    } else {
       std::string name(val->getName().data());
-      CLIPSBasicBlockBuilder builder (name, namer);
-      builder.open();
-      builder.addFields(val, parent, constructInstructions);
-      builder.close();
-      builder.convertToKnowledge();
+      CLIPSBasicBlockBuilder builder (name, namer, tl);
+      builder.setFields(val, parent, constructInstructions);
       return name;
    }
 }
-std::string Route(Region* region, char* parent, FunctionNamer& namer, LoopInfo* li) {
+std::string Route(Region* region, char* parent, FunctionNamer& namer, TypeLibrarian& tl, LoopInfo* li) {
    if(namer.pointerRegistered((PointerAddress)region)) {
       return namer.nameFromPointer((PointerAddress)region);
    } else {
@@ -461,15 +422,12 @@ std::string Route(Region* region, char* parent, FunctionNamer& namer, LoopInfo* 
       namer.makeRegionID(buf);
       std::string name(buf);
       free(buf);
-      CLIPSRegionBuilder rb (name, namer, li);
-      rb.open();
-      rb.addFields(region, parent);
-      rb.close();
-      rb.convertToKnowledge();
+      CLIPSRegionBuilder rb (name, namer, tl, li);
+      rb.setFields(region, parent);
       return name;
    }
 }
-std::string Route(Loop* loop, char* parent, FunctionNamer& namer) {
+std::string Route(Loop* loop, char* parent, FunctionNamer& namer, TypeLibrarian& tl) {
    if(namer.pointerRegistered((PointerAddress)loop)) {
       return namer.nameFromPointer((PointerAddress)loop);
    } else {
@@ -477,15 +435,16 @@ std::string Route(Loop* loop, char* parent, FunctionNamer& namer) {
       namer.makeLoopID(buf);
       std::string name(buf);
       free(buf);
-      CLIPSLoopBuilder l(name, namer);
-      l.build(loop, parent);
+      CLIPSLoopBuilder l(name, namer, tl);
+      l.setFields(loop, parent);
+      //l.build(loop, parent);
       return name;
    }
 }
-void RouteLoopInfo(LoopInfo& li, char* parent, FunctionNamer& namer) {
+void RouteLoopInfo(LoopInfo& li, char* parent, FunctionNamer& namer, TypeLibrarian& tl) {
    for(LoopInfo::iterator b = li.begin(), e = li.end(); b != e; ++b) {
       Loop* l = *b;
-      Route(l, parent, namer);
+      Route(l, parent, namer, tl);
    }
 }
 #undef nested_dyn_cast

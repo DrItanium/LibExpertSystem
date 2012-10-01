@@ -38,14 +38,15 @@ namespace {
             std::pair<PointerAddress, std::string> pair(0,"nil");
             translation.insert(pair);
             FunctionNamer namer (translation);
+            TypeLibrarian librarian;
             Reset();
             MakeInstance(nilObject);
-            ModifyFunctionContents(fn, namer);
+            ModifyFunctionContents(fn, namer, librarian);
             LoopInfo &li = getAnalysis<LoopInfo>();
-            RouteLoopInfo(li, funcName, namer);
+            RouteLoopInfo(li, funcName, namer, librarian);
             RegionInfo &ri = getAnalysis<RegionInfo>();
             llvm::Region* top = ri.getTopLevelRegion();
-            Route(top, funcName, namer, &li);
+            Route(top, funcName, namer, librarian, &li);
             Run(-1L);
             return true;
          } else {

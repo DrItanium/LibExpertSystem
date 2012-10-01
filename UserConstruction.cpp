@@ -2,13 +2,14 @@
 using namespace llvm;
 
 CLIPSUserBuilder::CLIPSUserBuilder(std::string nm, std::string ty, FunctionNamer& namer, TypeLibrarian& tl) : CLIPSValueBuilder(nm, ty, namer, tl) { }
-void CLIPSUserBuilder::addFields(User* user, char* parent) {
-	CLIPSValueBuilder::addFields((Value*)user, parent);
+void CLIPSUserBuilder::setFields(User* user, char* parent) {
+	CLIPSValueBuilder::setFields((Value*)user, parent);
    unsigned opCount = user->getNumOperands();
 	if(opCount > 0) {
       MultifieldBuilder mb (opCount);
 		//openField("Operands");
       FunctionNamer& namer = getNamer();
+      TypeLibrarian& tl = getLibrarian();
       unsigned index = 1;
 	   for (User::op_iterator i0 = user->op_begin(), e0 = user->op_end(); i0 != e0; ++i0, ++index) {
          Value* target = *i0;

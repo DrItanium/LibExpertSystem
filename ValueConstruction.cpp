@@ -1,18 +1,19 @@
 #include "ConstructionTools.h"
 using namespace llvm;
-CLIPSValueBuilder::CLIPSValueBuilder(std::string nm, std::string ty, FunctionNamer& namer) : CLIPSObjectBuilder(nm, ty, namer) { }
+CLIPSValueBuilder::CLIPSValueBuilder(std::string nm, std::string ty, FunctionNamer& namer, TypeLibrarian& tl) : CLIPSObjectBuilder(nm, ty, namer, tl) { }
 void CLIPSValueBuilder::setType(Type* t) {
 	PointerAddress ptr = (PointerAddress)t;
    FunctionNamer& namer = getNamer();
+   TypeLibrarian& tl = getLibrarian();
    if(namer.pointerRegistered(ptr)) {
       addField("Type", namer.nameFromPointer(ptr));
    } else {
-      addField("Type", Route(t, namer));
+      addField("Type", Route(t, namer, tl));
    }
 }
 
-void CLIPSValueBuilder::addFields(Value* val, char* parent) {
-	CLIPSObjectBuilder::addFields((PointerAddress)val, parent);
+void CLIPSValueBuilder::setFields(Value* val, char* parent) {
+	CLIPSObjectBuilder::setFields((PointerAddress)val, parent);
 	setType(val->getType());
 	addField("Name", val->getName());
 	if(val->isDereferenceablePointer()) addTrueField("IsDereferenceablePointer");
