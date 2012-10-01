@@ -1,21 +1,24 @@
 #include "MultifieldBuilder.h"
-unsigned MultifieldBuilder::getCount() {
-   return count; 
-}
-void* MultifieldBuilder::getMultifieldPointer() {
-   return multifieldPointer;
-}
 void MultifieldBuilder::setType(unsigned index, int type) {
-   SetMFType(multifieldPointer, index, type);
+   (*container)[index].type = type;
+   //SetMFType(multifieldPointer, index, type);
 }
 void MultifieldBuilder::setValue(unsigned index, void* value) {
-   SetMFValue(multifieldPointer, index, value);
+   (*container)[index].data = value;
+   //SetMFValue(multifieldPointer, index, value);
 }
 void MultifieldBuilder::setSlot(unsigned index, int type, void* value) {
-   setType(index, type);
-   setValue(index, value);
-//   printf("setSlot(%d, %d, value)\n", index, type);
-   numberPopulated++;
+   if(index >= container->size()) {
+      MultifieldBuilderCell mbc;
+      mbc.type = type;
+      mbc.data = value;
+      container->push_back(mbc);
+   } else {
+      setType(index, type);
+      setValue(index, value);
+   }
+   //   printf("setSlot(%d, %d, value)\n", index, type);
+   //   numberPopulated++;
 }
 void MultifieldBuilder::setSlot(unsigned index, PointerAddress value) {
    setSlot(index, INTEGER, AddLong(value));
@@ -61,8 +64,14 @@ void MultifieldBuilder::setFalse(unsigned index) {
 }
 
 void MultifieldBuilder::bindToDataObjectPointer(DATA_OBJECT_PTR ptr) {
+   void* multifieldPointer = CreateMultifield(container->size());
+   for(int i = 0, j = 1; i < container->size(); ++i, ++j) {
+      MultifieldBuilderCell cell = (*container)[i];
+      SetMFType(multifieldPointer, j, cell.type);
+      SetMFValue(multifieldPointer, j, cell.data);
+   }
    SetpType(ptr, MULTIFIELD);
    SetpValue(ptr, multifieldPointer); 
    SetpDOBegin(ptr, 1);
-   SetpDOEnd(ptr, numberPopulated);
+   SetpDOEnd(ptr, container->size());
 }

@@ -28,24 +28,33 @@
 #include "llvm/Function.h"
 #include "llvm/Analysis/LoopInfo.h"
 #include "FunctionNamer.h"
-
+#include <vector> 
 extern "C" {
 #include "clips.h"
 }
 using namespace llvm;
+struct MultifieldBuilderCell {
+   void* data;
+   int type;
+};
 class MultifieldBuilder {
    private:
-      void* multifieldPointer;
-      unsigned count;
-      unsigned numberPopulated;
+      std::vector<MultifieldBuilderCell>* container;
+      //void* multifieldPointer;
+      //unsigned count;
+      //unsigned numberPopulated;
    public:
-      MultifieldBuilder(unsigned size) {
-         multifieldPointer = CreateMultifield(size);
-         count = size;
-         numberPopulated = 0;
+      ~MultifieldBuilder() {
+         delete container;
       }
-      unsigned getCount();
-      void* getMultifieldPointer();
+      MultifieldBuilder(unsigned size) {
+         container = new std::vector<MultifieldBuilderCell>();
+         //multifieldPointer = CreateMultifield(size);
+         //count = size;
+         //numberPopulated = 0;
+      }
+      //unsigned getCount();
+      //void* getMultifieldPointer();
       void setType(unsigned index, int type);
       void setValue(unsigned index, void *value);
       void setSlot(unsigned index, int type, void* value);
