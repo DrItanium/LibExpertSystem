@@ -29,13 +29,25 @@ class CLIPSRegionBuilder : public CLIPSObjectBuilder {
 			if(exit != NULL) addField("Exits", exit->getName());
 			char* name = (char*)getName().c_str();
 			FunctionNamer& namer = getNamer();
-			std::set<std::string> contents;
-			std::map<std::string, std::set<BasicBlock*> > directFacts;
+			//std::set<std::string> contents;
+			//std::map<std::string, std::set<BasicBlock*> > directFacts;
+         //open contents 
+			openField((char*)"Contents");
 			for(Region::element_iterator i = region->element_begin(), e = region->element_end(); i != e; ++i) {
 				//it's really simple we just take a look and 
 				RegionNode* rn = *i;
 				if(!rn->isSubRegion()) {
 					BasicBlock* bb = rn->getEntry(); 
+               appendValue(Route(bb, name, namer));
+				} else {
+					Region* subRegion = rn->getNodeAs<Region>();
+               appendValue(Route(subRegion, name, namer, getLoopInfo()));
+					//contents.insert(Route(subRegion, name, namer, getLoopInfo()));
+				}
+         }
+         closeField();
+
+               /*
 					if(namer.pointerRegistered((PointerAddress)bb)) {
 						Loop* target = region->outermostLoopInRegion(getLoopInfo(), bb);
 						//this means that it's part of a loop or we are at a
@@ -121,6 +133,7 @@ class CLIPSRegionBuilder : public CLIPSObjectBuilder {
 				}
 				closeField();
 			} 
+         */
 		}
 };
 
