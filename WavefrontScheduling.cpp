@@ -45,7 +45,7 @@ namespace {
             RouteLoopInfo(li, funcName, namer);
             RegionInfo &ri = getAnalysis<RegionInfo>();
             llvm::Region* top = ri.getTopLevelRegion();
-            Route(top, funcName, namer, &li);
+            Route(top, funcName, namer);
             Run(-1L);
             return true;
          } else {
