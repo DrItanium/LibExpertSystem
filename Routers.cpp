@@ -453,7 +453,7 @@ std::string Route(BasicBlock* val, char* parent, FunctionNamer& namer, bool cons
       return name;
    }
 }
-std::string Route(Region* region, char* parent, FunctionNamer& namer, LoopInfo* li) {
+std::string Route(Region* region, char* parent, FunctionNamer& namer) {
    if(namer.pointerRegistered((PointerAddress)region)) {
       return namer.nameFromPointer((PointerAddress)region);
    } else {
@@ -461,7 +461,7 @@ std::string Route(Region* region, char* parent, FunctionNamer& namer, LoopInfo* 
       namer.makeRegionID(buf);
       std::string name(buf);
       free(buf);
-      CLIPSRegionBuilder rb (name, namer, li);
+      CLIPSRegionBuilder rb (name, namer);
       rb.open();
       rb.addFields(region, parent);
       rb.close();

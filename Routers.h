@@ -42,7 +42,7 @@ std::string Route(Instruction* inst, char* parent, FunctionNamer& namer);
 std::string Route(Type* t, FunctionNamer& namer);
 std::string Route(Operator* op, char* parent, FunctionNamer& namer);
 std::string Route(BasicBlock* bb, char* parent, FunctionNamer& namer, bool constructInstructions = true);
-std::string Route(Region* region, char* parent, FunctionNamer& namer, LoopInfo* li);
+std::string Route(Region* region, char* parent, FunctionNamer& namer);
 std::string Route(Argument* arg, char* parent, FunctionNamer& namer);
 std::string Route(Loop* loop, char* parent, FunctionNamer& namer);
 void RouteLoopInfo(LoopInfo& li, char* parent, FunctionNamer& namer);

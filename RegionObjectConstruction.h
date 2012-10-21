@@ -2,20 +2,14 @@
 #define _region_object_construction_h
 #include "ConstructionTools.h"
 #include "llvm/ADT/SmallSet.h"
-#include "llvm/Analysis/LoopInfo.h"
 #include <set>
 #include <map>
 extern "C" {
 #include "clips.h"
 }
 class CLIPSRegionBuilder : public CLIPSObjectBuilder {
-	private:
-		LoopInfo* li;
 	public:
-		CLIPSRegionBuilder(std::string nm, FunctionNamer& namer, LoopInfo* l) : CLIPSObjectBuilder(nm, "Region", namer) {
-			li = l;
-		}
-		LoopInfo* getLoopInfo() { return li; }
+		CLIPSRegionBuilder(std::string nm, FunctionNamer& namer) : CLIPSObjectBuilder(nm, "Region", namer) { }
 		void addFields(Region* region, char* parent) {
 			//we should edit the parent to be a loop if it turns out that we
 			//are part of a loop
@@ -38,7 +32,7 @@ class CLIPSRegionBuilder : public CLIPSObjectBuilder {
                appendValue(Route(bb, name, namer));
 				} else {
 					Region* subRegion = rn->getNodeAs<Region>();
-               appendValue(Route(subRegion, name, namer, getLoopInfo()));
+               appendValue(Route(subRegion, name, namer));
 				}
          }
          closeField();
