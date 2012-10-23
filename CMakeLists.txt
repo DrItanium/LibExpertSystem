@@ -102,7 +102,6 @@ insquery.c
 insqypsr.c
 InstructionConstruction.cpp
 iofun.c
-JSEdgeRemoval.cpp
 lgcldpnd.c
 LLVMWrapper.cpp
 main.c
@@ -176,8 +175,7 @@ userdata.c
 userfunctions.c
 utility.c
 ValueConstruction.cpp
-watch.c
-WavefrontScheduling.cpp)
+watch.c)
 
 add_dependencies(ExpertSystem
   LLVMAnalysis
