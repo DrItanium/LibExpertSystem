@@ -190,32 +190,32 @@ class CLIPSGlobalValueBuilder : public CLIPSConstantBuilder
       CLIPSGlobalValueBuilder(std::string nm, std::string ty, FunctionNamer& namer) : CLIPSConstantBuilder(nm, ty, namer) { }
       void addFields(GlobalValue* addr, char* parent) {
          CLIPSConstantBuilder::addFields((Constant*)addr, parent); 
-         //addField("Alignment", addr->getAlignment());
-         //if(addr->hasUnnamedAddr()) addTrueField("HasUnnamedAddr"); 
-         //if(addr->hasDefaultVisibility()) addTrueField("HasDefaultVisibility"); 
-         //if(addr->hasHiddenVisibility()) addTrueField("HasHiddenVisibility"); 
-         //if(addr->hasProtectedVisibility()) addTrueField("HasProtectedVisibility"); 
-         //if(addr->hasSection()) {
-         //   addTrueField("HasSection");
-         //   addField("Section", addr->getSection());
-         //}
-         //if(addr->hasExternalLinkage()) addTrueField("HasExternalLinkage"); 
-         //if(addr->hasAvailableExternallyLinkage()) addTrueField("HasAvailableExternallyLinkage"); 
-         //if(addr->hasLinkOnceLinkage()) addTrueField("HasLinkOnceLinkage"); 
-         //if(addr->hasWeakLinkage()) addTrueField("HasWeakLinkage");
-         //if(addr->hasAppendingLinkage()) addTrueField("HasAppendingLinkage"); 
-         //if(addr->hasInternalLinkage()) addTrueField("HasInternalLinkage"); 
-         //if(addr->hasPrivateLinkage()) addTrueField("HasPrivateLinkage"); 
-         //if(addr->hasLinkerPrivateLinkage()) addTrueField("HasLinkerPrivateLinkage"); 
-         //if(addr->hasLinkerPrivateWeakLinkage()) addTrueField("HasLinkerPrivateWeakLinkage"); 
-         //if(addr->hasLinkerPrivateWeakDefAutoLinkage()) addTrueField("HasLinkerPrivateWeakDefAutoLinkage"); 
-         //if(addr->hasLocalLinkage()) addTrueField("HasLocalLinkage");
-         //if(addr->hasDLLImportLinkage()) addTrueField("HasDLLImportLinkage");
-         //if(addr->hasDLLExportLinkage()) addTrueField("HasDLLExportLinkage");
-         //if(addr->hasExternalWeakLinkage()) addTrueField("HasExternalWeakLinkage");
-         //if(addr->hasCommonLinkage()) addTrueField("HasCommonLinkage");
-         //if(addr->mayBeOverridden()) addTrueField("MayBeOverridden");
-         //if(addr->isWeakForLinker()) addTrueField("IsWeakForLinker");
+         addField("Alignment", addr->getAlignment());
+         if(addr->hasUnnamedAddr()) addTrueField("HasUnnamedAddr"); 
+         if(addr->hasDefaultVisibility()) addTrueField("HasDefaultVisibility"); 
+         if(addr->hasHiddenVisibility()) addTrueField("HasHiddenVisibility"); 
+         if(addr->hasProtectedVisibility()) addTrueField("HasProtectedVisibility"); 
+         if(addr->hasSection()) {
+            addTrueField("HasSection");
+            addField("Section", addr->getSection());
+         }
+         if(addr->hasExternalLinkage()) addTrueField("HasExternalLinkage"); 
+         if(addr->hasAvailableExternallyLinkage()) addTrueField("HasAvailableExternallyLinkage"); 
+         if(addr->hasLinkOnceLinkage()) addTrueField("HasLinkOnceLinkage"); 
+         if(addr->hasWeakLinkage()) addTrueField("HasWeakLinkage");
+         if(addr->hasAppendingLinkage()) addTrueField("HasAppendingLinkage"); 
+         if(addr->hasInternalLinkage()) addTrueField("HasInternalLinkage"); 
+         if(addr->hasPrivateLinkage()) addTrueField("HasPrivateLinkage"); 
+         if(addr->hasLinkerPrivateLinkage()) addTrueField("HasLinkerPrivateLinkage"); 
+         if(addr->hasLinkerPrivateWeakLinkage()) addTrueField("HasLinkerPrivateWeakLinkage"); 
+         if(addr->hasLinkerPrivateWeakDefAutoLinkage()) addTrueField("HasLinkerPrivateWeakDefAutoLinkage"); 
+         if(addr->hasLocalLinkage()) addTrueField("HasLocalLinkage");
+         if(addr->hasDLLImportLinkage()) addTrueField("HasDLLImportLinkage");
+         if(addr->hasDLLExportLinkage()) addTrueField("HasDLLExportLinkage");
+         if(addr->hasExternalWeakLinkage()) addTrueField("HasExternalWeakLinkage");
+         if(addr->hasCommonLinkage()) addTrueField("HasCommonLinkage");
+         if(addr->mayBeOverridden()) addTrueField("MayBeOverridden");
+         if(addr->isWeakForLinker()) addTrueField("IsWeakForLinker");
       }
 };
 
