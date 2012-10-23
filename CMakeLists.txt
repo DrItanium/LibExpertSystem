@@ -175,7 +175,8 @@ userdata.c
 userfunctions.c
 utility.c
 ValueConstruction.cpp
-watch.c)
+watch.c
+FunctionConstruction.cpp)
 
 add_dependencies(ExpertSystem
   LLVMAnalysis
