@@ -179,7 +179,7 @@ ValueConstruction.cpp
 watch.c
 WavefrontScheduling.cpp)
 
-add_llvm_library_dependencies(ExpertSystem
+add_dependencies(ExpertSystem
   LLVMAnalysis
   LLVMCore
   LLVMSupport
