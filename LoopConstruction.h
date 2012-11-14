@@ -13,7 +13,7 @@ class CLIPSLoopBuilder : public CLIPSObjectBuilder {
          BasicBlock* loopPredecessor = loop->getLoopPredecessor();
          BasicBlock* loopPreheader = loop->getLoopPreheader();
          SmallVector<BasicBlock*, 128> exitBlocks;
-         loop->getExitBlocks(exitBlocks);
+         loop->getUniqueExitBlocks(exitBlocks);
          addField("Depth", loop->getLoopDepth());
          addField("BackEdgeCount", loop->getNumBackEdges());
          if(latch != 0) addField("LatchBlock", header->getName()); 
