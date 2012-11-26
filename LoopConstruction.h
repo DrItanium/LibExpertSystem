@@ -33,7 +33,8 @@ class CLIPSLoopBuilder : public CLIPSObjectBuilder {
          }
          for(Loop::block_iterator s = loop->block_begin(), e = loop->block_end(); s != e; ++s) {
             BasicBlock* bb = (*s);
-            if(!n.pointerRegistered((PointerAddress)bb)) appendValue(Route(bb, t, n));
+            if(!n.pointerRegistered((PointerAddress)bb)) 
+               appendValue(Route(bb, t, n));
          }
          closeField();
          openField("Exits");
