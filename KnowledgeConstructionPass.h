@@ -25,12 +25,12 @@ namespace {
       virtual void getAnalysisUsage(AnalysisUsage &Info) const {
          Info.addRequired<LoopInfo>();
          Info.addRequired<RegionInfo>();
-			Info.addRequired<EnvironmentConstruction>();
+			//Info.addRequired<EnvironmentConstruction>();
       }
 		//TODO: add the route commands
 
       virtual bool runOnFunction(Function& fn) {
-			EnvironmentConstruction &env = getAnalysisUsage<EnvironmentConstruction>();
+			//EnvironmentConstruction &env = getAnalysisUsage<EnvironmentConstruction>();
 			return false;
       }
    };
