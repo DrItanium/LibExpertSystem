@@ -1,17 +1,9 @@
 #include "FunctionNamer.h"
 #include <string>
 
-FunctionNamer::FunctionNamer(llvm::DenseMap<PointerAddress, std::string>& table) {
-	gensymID = 0L;
-	registerID = 0L;
-	basicBlockID = 0L;
-	regionID = 0L;
-   loopID = 0L;
-	names = &table;
-   instructionIndices = new std::map<std::string, PointerAddress>();
-}
 FunctionNamer::~FunctionNamer() { 
    delete instructionIndices; 
+	delete names;
 }
 PointerAddress FunctionNamer::nextGensymID() { 
    return gensymID++; 
@@ -117,3 +109,7 @@ PointerAddress FunctionNamer::registerInstructionWithBasicBlock(std::string name
    //llvm::errs() << "instructionIndicies[" << name << "] = " << (*instructionIndices)[name] << " and old = " << old << '\n';
    return tmp;
 }
+
+char FunctionNamer::ID = 0;
+static RegisterPass<FunctionNamer> fnNamer("function-namer", "Function Namer for Expert System", false, false);
+INITIALIZE_PASS(FunctionNamer, "function-namer" , "Function Namer for Expert System", false, false)
