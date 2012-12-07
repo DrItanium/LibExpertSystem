@@ -19,7 +19,7 @@ namespace {
 		void* environment;
 		public:
 		EnvironmentConstruction() : FunctionPass(ID) {
-
+			environment = CreateEnvironment();
 		}
 		~EnvironmentConstruction() {
 			if(environment) {
@@ -37,7 +37,6 @@ namespace {
 		bool makeInstance(char* str);
 		void batchStar(char* str);
 		virtual bool runOnFunction(Function& fn) {
-			environment = CreateEnvironment();
 			return false;
 		}
 	};
