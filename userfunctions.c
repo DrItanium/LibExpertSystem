@@ -42,7 +42,6 @@
 /***************************************************************************/
 
 #include "clips.h"
-#include "llvm_io_router.h"
 void UserFunctions(void);
 void EnvUserFunctions(void *);
 
