@@ -42,6 +42,7 @@
 /***************************************************************************/
 
 #include "clips.h"
+#include "llvm_io_router.h"
 void UserFunctions(void);
 void EnvUserFunctions(void *);
 
@@ -109,6 +110,7 @@ void EnvUserFunctions(
    EnvDefineFunction(theEnv, "llvm-unlink-instruction", 'w', PTIEF UnlinkInstruction, "UnlinkInstruction");
    EnvDefineFunction(theEnv, "llvm-delete-instruction", 'w', PTIEF DeleteInstruction, "DeleteInstruction");
    EnvDefineFunction(theEnv, "llvm-schedule-block", 'w', PTIEF ScheduleInstructions, "ScheduleInstructions");
+	SetupLLVMIORouter(theEnv);
 
 
 #if MAC_MCW || WIN_MCW || MAC_XCD
