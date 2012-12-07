@@ -31,6 +31,7 @@ namespace {
          Info.addRequired<RegionInfo>();
       }
       virtual bool runOnFunction(Function& fn) {
+			return false;
          //do not actually wavefront schedule if we only have one block
 			/*
          if(fn.size() > 1) {
