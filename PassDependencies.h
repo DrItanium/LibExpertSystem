@@ -9,5 +9,6 @@ namespace llvm {
    void initializeJSEdgeRemovalPass(PassRegistry &Registry);
 	void initializeKnowledgeConstructionPass(PassRegistry &Registry);
 	void initializeEnvironmentConstructionPass(PassRegistry &Registry);
+	void initializeFunctionNamerPass(PassRegistry &Registry);
 }
 #endif
