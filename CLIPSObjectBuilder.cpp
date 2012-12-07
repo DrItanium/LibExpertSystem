@@ -81,9 +81,9 @@ void CLIPSObjectBuilder::close() {
       closed = true;
    }
 }
-void CLIPSObjectBuilder::convertToKnowledge() {
+void CLIPSObjectBuilder::convertToKnowledge(void* theEnv) {
    if(closed && !converted) {
-      MakeInstance((char*)stream->str().c_str());
+      EnvMakeInstance(theEnv, (char*)stream->str().c_str());
       converted = true;
    }
 }

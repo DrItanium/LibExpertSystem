@@ -47,6 +47,7 @@ class CLIPSObjectBuilder {
    public:
       CLIPSObjectBuilder(std::string n, std::string t, FunctionNamer& uidCreator);
       ~CLIPSObjectBuilder();
+		std::string getCompletedString() { return stream->str(); }
       std::string& getName() { return name; }
       std::string& getType() { return type; }
       FunctionNamer& getNamer() { return *namer; }
@@ -90,7 +91,7 @@ class CLIPSObjectBuilder {
 		void closeField();
       void open();
       void close();
-      void convertToKnowledge();
+      void convertToKnowledge(void* theEnv);
       void addFields(PointerAddress pointer, char* parent);
 };
 
