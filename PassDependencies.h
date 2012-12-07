@@ -8,5 +8,6 @@ namespace llvm {
    void initializeWavefrontSchedulingPass(PassRegistry &Registry);
    void initializeJSEdgeRemovalPass(PassRegistry &Registry);
 	void initializeKnowledgeConstructionPass(PassRegistry &Registry);
+	void initializeEnvironmentConstructionPass(PassRegistry &Registry);
 }
 #endif
