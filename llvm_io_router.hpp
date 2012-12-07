@@ -28,6 +28,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef llvm_io_router_h
 #define llvm_io_router_h
 
-void SetupLLVMIORouter(void* theEnv);
+extern "C" void SetupLLVMIORouter(void* theEnv);
 
 #endif
