@@ -18,7 +18,7 @@ extern "C" {
 }
 
 using namespace llvm;
-char nilObject[41] = "(nil of ConstantPointerNull (Pointer 0))";
+//char nilObject[41] = "(nil of ConstantPointerNull (Pointer 0))";
 namespace {
    struct KnowledgeConstruction : public FunctionPass {
       static char ID;
