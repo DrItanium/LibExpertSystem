@@ -27,7 +27,7 @@ namespace llvm {
       WavefrontScheduling() : FunctionPass(ID) {
       }
       virtual void getAnalysisUsage(AnalysisUsage &Info) const {
-			Info.addRequired<KnowledgeConstruction>();
+			Info.addRequiredTransitive<KnowledgeConstruction>();
 			Info.addRequired<EnvironmentConstruction>();
 			Info.addRequired<JSEdgeRemoval>();
       }
@@ -51,4 +51,8 @@ namespace llvm {
 char WavefrontScheduling::ID = 0;
 //for opt
 static RegisterPass<WavefrontScheduling> wave("wavefront", "Wavefront Scheduling", false, false);
-//INITIALIZE_PASS(WavefrontScheduling, "wavefront", "Wavefront Scheduling", false, false)
+INITIALIZE_PASS_BEGIN(WavefrontScheduling, "wavefront", "Wavefront Scheduling", false, false)
+INITIALIZE_PASS_DEPENDENCY(KnowledgeConstruction)
+INITIALIZE_PASS_DEPENDENCY(EnvironmentConstruction)
+INITIALIZE_PASS_DEPENDENCY(JSEdgeRemoval)
+INITIALIZE_PASS_END(WavefrontScheduling, "wavefront", "Wavefront Scheduling", false, false)

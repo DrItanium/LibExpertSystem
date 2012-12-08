@@ -105,6 +105,7 @@ namespace llvm {
 			RegionInfo &regions = getAnalysis<RegionInfo>();
 			FunctionNamer &namer = getAnalysis<FunctionNamer>();
 			funcName = (char*)fn.getName().data();
+			llvm::errs() << "Current function is " << funcName << "\n";
 			namer.reset();
 			instances->clear();
 			updateFunctionContents(fn, namer);

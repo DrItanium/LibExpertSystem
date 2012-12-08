@@ -53,5 +53,5 @@ void EnvironmentConstruction::batchStar(char* str) {
 }
 char EnvironmentConstruction::ID = 0;
 //for opt
-static RegisterPass<EnvironmentConstruction> env("environment", "environment constructor", false, false);
-//INITIALIZE_PASS(EnvironmentConstruction, "environment", "environment constructor", false, false)
+static RegisterPass<EnvironmentConstruction> env("environment", "environment constructor", false, true);
+INITIALIZE_PASS(EnvironmentConstruction, "environment", "environment constructor", false, true)

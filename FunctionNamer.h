@@ -37,6 +37,7 @@ namespace llvm {
 			loopID = 0L;
 			names = new llvm::DenseMap<PointerAddress, std::string>();
 			instructionIndices = new std::map<std::string, PointerAddress>();
+			llvm::errs() << "Finished building FunctionNamer\n";
 		}
 		~FunctionNamer();
 		PointerAddress nextLoopID();
@@ -69,7 +70,10 @@ namespace llvm {
 		void registerPointerToName(PointerAddress ptr, std::string& name);
 		std::string nameFromPointer(PointerAddress ptr);
 		void tryRegisterPointerToName(PointerAddress ptr, std::string& name);
-		virtual bool runOnFunction(Function& fn) { return false; }
+		virtual bool runOnFunction(Function& fn) { 
+			llvm::errs() << "runOnFunction of FunctionNamer called\n";
+			return false; 
+		}
 	};
 }
 #endif
