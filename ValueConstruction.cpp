@@ -29,6 +29,6 @@ void CLIPSValueBuilder::build(Value* val, KnowledgeConstruction *kc, char* paren
 	open();
 	addFields(val, kc, parent);
 	close();
-	std::string &str = getCompletedString();
+	std::string str = getCompletedString();
 	kc->addToKnowledgeBase((PointerAddress)val, str);
 }
