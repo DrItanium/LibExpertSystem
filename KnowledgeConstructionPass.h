@@ -63,20 +63,20 @@ namespace {
 		}
 		//TODO: add the route commands
 
-		std::string route(Value* val, char* parent, FunctionNamer& namer);
+		std::string route(Value* val, FunctionNamer& namer, char* parent);
 		std::string route(Value* val, FunctionNamer& namer);
-		std::string route(User* user, char* parent, FunctionNamer& namer);
+		std::string route(User* user, FunctionNamer& namer, char* parent);
 		std::string route(Constant* cnst, FunctionNamer& namer);
-		std::string route(Constant* cnst, char* parent, FunctionNamer& namer);
-		std::string route(Instruction* inst, char* parent, FunctionNamer& namer);
+		std::string route(Constant* cnst, FunctionNamer& namer, char* parent);
+		std::string route(Instruction* inst, FunctionNamer& namer, char* parent);
 		std::string route(Type* t, FunctionNamer& namer);
-		std::string route(Operator* op, char* parent, FunctionNamer& namer);
-		std::string route(BasicBlock* bb, char* parent, FunctionNamer& namer, bool constructInstructions = true);
-		std::string route(Region* region, char* parent, FunctionNamer& namer);
-		std::string route(Argument* arg, char* parent, FunctionNamer& namer);
-		std::string route(Loop* loop, char* parent, FunctionNamer& namer);
-		void route(RegionInfo& ri, char* parent, FunctionNamer& namer);
-		void route(LoopInfo& li, char* parent, FunctionNamer& namer);
+		std::string route(Operator* op, FunctionNamer& namer, char* parent);
+		std::string route(BasicBlock* bb, FunctionNamer& namer, char* parent, bool constructInstructions = true);
+		std::string route(Region* region, FunctionNamer& namer, char* parent);
+		std::string route(Argument* arg, FunctionNamer& namer, char* parent);
+		std::string route(Loop* loop, FunctionNamer& namer, char* parent);
+		void route(RegionInfo& ri, FunctionNamer& namer, char* parent);
+		void route(LoopInfo& li, FunctionNamer& namer, char* parent);
 		void updateFunctionContents(Function& fn, FunctionNamer& namer);
 		virtual bool runOnFunction(Function& fn) {
 			char* funcName;
@@ -88,8 +88,8 @@ namespace {
 			fn->reset();
 			instances->clear();
 			updateFunctionContents(fn, namer);
-			route(loops, funcName, namer);
-			route(regions, funcName, namer);
+			route(loops, namer, funcName);
+			route(regions, namer, funcName);
 			//at this point we shall have a set of instance strings
 			return false;
 		}
