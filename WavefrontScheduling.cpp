@@ -37,13 +37,12 @@ namespace llvm {
 
 				RegionInfo &ri = getAnalysis<RegionInfo>();
 				LoopInfo &li = getAnalysis<LoopInfo>();
-				KnowledgeConstruction kc;
 				EnvironmentConstruction env;
-				kc.route(fn, li, ri);
 				env.batchStar("Init.clp");
 				env.reset();
 				env.makeInstance(nilObject);
-				env.makeInstances((char*)kc.getInstancesAsString().c_str());
+				KnowledgeConstruction kc(env);
+				kc.route(fn, li, ri);
 				env.run(-1L);
             return true;
          } else {

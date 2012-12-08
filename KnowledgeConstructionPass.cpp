@@ -17,21 +17,8 @@ free(n)
 
 #define nested_dyn_cast(Type, name, in) Type * name = dyn_cast<Type>(in)
 #define simple_dyn_cast(Type, in) nested_dyn_cast(Type, op, in)
-KnowledgeConstruction::~KnowledgeConstruction() {
-//	delete instances;
-	delete instanceStream;
-	delete tmp;
-}
-void KnowledgeConstruction::addToInstanceStream(std::string &instance) {
-	(*instanceStream) << instance << " ";
-}
-//void KnowledgeConstruction::registerInstance(PointerAddress ptrAdr, std::string &instance) {
-//	std::pair<PointerAddress, std::string&> pair (ptrAdr, instance);
-//	instances->insert(pair);
-//}
-void KnowledgeConstruction::addToKnowledgeBase(PointerAddress ptrAddress, std::string &instance) {
-	addToInstanceStream(instance);
-	//registerInstance(ptrAddress, instance);
+void KnowledgeConstruction::addToKnowledgeBase(PointerAddress ptr, std::string &instance) {
+	env->makeInstance((char*)instance.c_str());
 }
 std::string KnowledgeConstruction::route(Value* val, FunctionNamer& namer, char* parent) {
 	if(namer.pointerRegistered((PointerAddress)val)) {
