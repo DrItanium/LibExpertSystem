@@ -27,15 +27,19 @@ namespace llvm {
       WavefrontScheduling() : FunctionPass(ID) {
       }
       virtual void getAnalysisUsage(AnalysisUsage &Info) const {
-			Info.addRequiredTransitive<KnowledgeConstruction>();
-			Info.addRequired<EnvironmentConstruction>();
+			Info.addRequired<LoopInfo>();
+			Info.addRequired<RegionInfo>();
 			Info.addRequired<JSEdgeRemoval>();
       }
       virtual bool runOnFunction(Function& fn) {
          //do not actually wavefront schedule if we only have one block
          if(fn.size() > 1) {
-				KnowledgeConstruction &kc = getAnalysis<KnowledgeConstruction>();
-				EnvironmentConstruction &env = getAnalysis<EnvironmentConstruction>();
+
+				RegionInfo &ri = getAnalysis<RegionInfo>();
+				LoopInfo &li = getAnalysis<LoopInfo>();
+				KnowledgeConstruction kc;
+				EnvironmentConstruction env;
+				kc.route(fn, li, ri);
 				env.batchStar("Init.clp");
 				env.makeInstance(nilObject);
 				env.makeInstances((char*)kc.getInstancesAsString().c_str());
@@ -52,7 +56,5 @@ char WavefrontScheduling::ID = 0;
 //for opt
 static RegisterPass<WavefrontScheduling> wave("wavefront", "Wavefront Scheduling", false, false);
 INITIALIZE_PASS_BEGIN(WavefrontScheduling, "wavefront", "Wavefront Scheduling", false, false)
-INITIALIZE_PASS_DEPENDENCY(KnowledgeConstruction)
-INITIALIZE_PASS_DEPENDENCY(EnvironmentConstruction)
 INITIALIZE_PASS_DEPENDENCY(JSEdgeRemoval)
 INITIALIZE_PASS_END(WavefrontScheduling, "wavefront", "Wavefront Scheduling", false, false)
