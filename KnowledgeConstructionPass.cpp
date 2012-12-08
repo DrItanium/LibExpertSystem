@@ -20,6 +20,7 @@ free(n)
 KnowledgeConstruction::~KnowledgeConstruction() {
 	delete instances;
 	delete instanceStream;
+	delete tmp;
 }
 void KnowledgeConstruction::addToInstanceStream(std::string &instance) {
 	(*instanceStream) << instance << " ";

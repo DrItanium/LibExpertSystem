@@ -45,12 +45,12 @@ namespace llvm {
 	class KnowledgeConstruction {
 		llvm::DenseMap<PointerAddress, std::string>* instances;
 		llvm::raw_string_ostream* instanceStream; 
-
+		std::string* tmp;
 		public:
 		KnowledgeConstruction() {
-			std::string tmp;
+			tmp = new std::string();
 			instances = new llvm::DenseMap<PointerAddress, std::string>();
-			instanceStream = new llvm::raw_string_ostream(tmp);
+			instanceStream = new llvm::raw_string_ostream(*tmp);
 		}
 		~KnowledgeConstruction();
 
