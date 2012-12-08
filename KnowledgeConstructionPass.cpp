@@ -1,4 +1,5 @@
 #include "KnowledgeConstructionPass.h"
+#include "KnowledgeConstructionEngine.h"
 KnowledgeConstruction::~KnowledgeConstruction() {
 	delete instances;
 	delete instanceStream;
@@ -37,11 +38,7 @@ std::string KnowledgeConstruction::route(Value* val, FunctionNamer& namer, char*
 			std::string name(gensymBuffer);
 			free(gensymBuffer);
 			CLIPSValueBuilder vb (name, "LLVMValue", namer);
-			vb.open();
-			vb.addFields(val, parent);
-			vb.close();
-			std::string& str = vb.getCompletedString();
-			addToKnowledgeBase((PointerAddress)val, str);
+			vb.build(val, this, parent);
 			return name;
 		}
 	}
@@ -56,27 +53,115 @@ std::string KnowledgeConstruction::route(Value* val, FunctionNamer& namer) {
 }
 
 std::string KnowledgeConstruction::route(User* user, FunctionNamer& namer, char* parent) {
+   if(namer.pointerRegistered((PointerAddress)user)) {
+      return namer.nameFromPointer((PointerAddress)user);
+   } else {
+      char* buf = CharBuffer(128);
+      namer.makeLoopID(buf);
+      std::string name(buf);
+      free(buf);
+   //   CLIPSLoopBuilder l(name, namer);
+	//	l.build(loop, this, parent);
+      return name;
+   }
 
 }
 std::string KnowledgeConstruction::route(Constant* cnst, FunctionNamer& namer) {
+   if(namer.pointerRegistered((PointerAddress)cnst)) {
+      return namer.nameFromPointer((PointerAddress)cnst);
+   } else {
+      char* buf = CharBuffer(128);
+      namer.makeLoopID(buf);
+      std::string name(buf);
+      free(buf);
+   //   CLIPSLoopBuilder l(name, namer);
+	//	l.build(loop, this, parent);
+      return name;
+   }
 
 }
 std::string KnowledgeConstruction::route(Constant* cnst, FunctionNamer& namer, char* parent) {
+   if(namer.pointerRegistered((PointerAddress)cnst)) {
+      return namer.nameFromPointer((PointerAddress)cnst);
+   } else {
+      char* buf = CharBuffer(128);
+      namer.makeLoopID(buf);
+      std::string name(buf);
+      free(buf);
+   //   CLIPSLoopBuilder l(name, namer);
+	//	l.build(loop, this, parent);
+      return name;
+   }
 
 }
 std::string KnowledgeConstruction::route(Instruction* inst, FunctionNamer& namer, char* parent) {
+   if(namer.pointerRegistered((PointerAddress)inst)) {
+      return namer.nameFromPointer((PointerAddress)inst);
+   } else {
+      char* buf = CharBuffer(128);
+      namer.makeLoopID(buf);
+      std::string name(buf);
+      free(buf);
+   //   CLIPSLoopBuilder l(name, namer);
+	//	l.build(loop, this, parent);
+      return name;
+   }
 
 }
 std::string KnowledgeConstruction::route(Type* t, FunctionNamer& namer) {
+   if(namer.pointerRegistered((PointerAddress)t)) {
+      return namer.nameFromPointer((PointerAddress)t);
+   } else {
+      char* buf = CharBuffer(128);
+      namer.makeLoopID(buf);
+      std::string name(buf);
+      free(buf);
+   //   CLIPSLoopBuilder l(name, namer);
+	//	l.build(loop, this, parent);
+      return name;
+   }
 
 }
 std::string KnowledgeConstruction::route(Operator* op, FunctionNamer& namer, char* parent) {
+   if(namer.pointerRegistered((PointerAddress)op)) {
+      return namer.nameFromPointer((PointerAddress)op);
+   } else {
+      char* buf = CharBuffer(128);
+      namer.makeLoopID(buf);
+      std::string name(buf);
+      free(buf);
+   //   CLIPSLoopBuilder l(name, namer);
+	//	l.build(loop, this, parent);
+      return name;
+   }
 
 }
 std::string KnowledgeConstruction::route(BasicBlock* bb, FunctionNamer& namer, char* parent, bool constructInstructions) {
+   if(namer.pointerRegistered((PointerAddress)bb)) {
+      return namer.nameFromPointer((PointerAddress)bb);
+   } else {
+      char* buf = CharBuffer(128);
+      namer.makeLoopID(buf);
+      std::string name(buf);
+      free(buf);
+   //   CLIPSLoopBuilder l(name, namer);
+	//	l.build(loop, this, parent);
+      return name;
+   }
 
 }
 std::string KnowledgeConstruction::route(Region* region, FunctionNamer& namer, char* parent) {
+   if(namer.pointerRegistered((PointerAddress)region)) {
+      return namer.nameFromPointer((PointerAddress)region);
+   } else {
+      char* buf = CharBuffer(128);
+      namer.makeLoopID(buf);
+      std::string name(buf);
+      free(buf);
+   //   CLIPSLoopBuilder l(name, namer);
+	//	l.build(loop, this, parent);
+      return name;
+   }
 
 }
 std::string KnowledgeConstruction::route(Argument* arg, FunctionNamer& namer, char* parent) {
@@ -119,7 +204,7 @@ std::string KnowledgeConstruction::route(MDString* mds, FunctionNamer& namer, ch
 		vb.addFields(val, parent);
 		vb.addStringField("String", mds->getString());
 		vb.close();
-		std::string &str = vb.getCompletedString();
+		std::string str = vb.getCompletedString();
 		addToKnowledgeBase((PointerAddress)mds, str);
 		return name;
 	}
@@ -151,7 +236,7 @@ std::string KnowledgeConstruction::route(MDNode* mdn, FunctionNamer& namer, char
 			vb.closeField();
 		}
 		vb.close();
-		std::string &str = vb.getCompletedString();
+		std::string str = vb.getCompletedString();
 		addToKnowledgeBase((PointerAddress)mdn, str);
 		return name;
 	}
@@ -174,7 +259,7 @@ std::string KnowledgeConstruction::route(InlineAsm* iasm, FunctionNamer& namer, 
 		vb.addStringField("AsmString", aStr);
 		vb.addStringField("ConstraintString", cnStr);
 		vb.close();
-		std::string &str = vb.getCompletedString();
+		std::string str = vb.getCompletedString();
 		addToKnowledgeBase((PointerAddress)iasm, str);
 		return name;
 	}

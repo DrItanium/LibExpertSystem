@@ -1,11 +1,14 @@
 #ifndef _constant_construction_h
 #define _constant_construction_h
+#include "KnowledgeConstructionPass.h"
 #include "ConstructionTools.h"
+
 using namespace llvm;
+
 class CLIPSConstantBuilder : public CLIPSUserBuilder {
    public:
       CLIPSConstantBuilder(std::string nm, std::string ty, FunctionNamer& namer) : CLIPSUserBuilder(nm, ty, namer) { }
-      void addFields(Constant* cnst, KnowledgeConstruction &kc, char* parent) {
+      void addFields(Constant* cnst, KnowledgeConstruction* kc, char* parent) {
          CLIPSUserBuilder::addFields((User*)cnst, kc, parent);
          if(cnst->isNullValue()) addTrueField("IsNullValue"); 
          if(cnst->isAllOnesValue()) addTrueField("IsAllOnesValue"); 
@@ -13,11 +16,11 @@ class CLIPSConstantBuilder : public CLIPSUserBuilder {
          if(cnst->canTrap()) addTrueField("CanTrap"); 
          if(cnst->isConstantUsed()) addTrueField("IsConstantUsed"); 
       }
-		void build(Constant* cnst, KnowledgeConstruction &kc, char* parent) {
+		void build(Constant* cnst, KnowledgeConstruction* kc, char* parent) {
 			open();
 			addFields(cnst, kc, parent);
 			close();
-			std::string &str = getCompletedString();
+			std::string str = getCompletedString();
 			kc.addToKnowledgeBase((PointerAddress)cnst, str);
 		}
 };
@@ -25,44 +28,44 @@ class CLIPSConstantBuilder : public CLIPSUserBuilder {
 class CLIPSBlockAddressBuilder : public CLIPSConstantBuilder {
    public:
       CLIPSBlockAddressBuilder(std::string nm, FunctionNamer& namer) : CLIPSConstantBuilder(nm, "BlockAddress", namer) { }
-      void addFields(BlockAddress* addr, KnowledgeConstruction &kc, char* parent) {
+      void addFields(BlockAddress* addr, KnowledgeConstruction* kc, char* parent) {
          CLIPSConstantBuilder::addFields((Constant*)addr, kc, parent); 
          addField("Target", addr->getBasicBlock()->getName());
          addField("Function", addr->getFunction()->getName());
       }
-		void build(BlockAddress* cnst, KnowledgeConstruction &kc, char* parent) {
+		void build(BlockAddress* cnst, KnowledgeConstruction* kc, char* parent) {
 			open();
 			addFields(cnst, kc, parent);
 			close();
-			std::string &str = getCompletedString();
+			std::string str = getCompletedString();
 			kc.addToKnowledgeBase((PointerAddress)cnst, str);
 		}
 };
 class CLIPSConstantAggregateZeroBuilder : public CLIPSConstantBuilder {
    public:
       CLIPSConstantAggregateZeroBuilder(std::string nm, FunctionNamer& namer) : CLIPSConstantBuilder(nm, "ConstantAggregateZero", namer) { }
-      void addFields(ConstantAggregateZero* addr, KnowledgeConstruction &kc, char* parent) {
+      void addFields(ConstantAggregateZero* addr, KnowledgeConstruction* kc, char* parent) {
          CLIPSConstantBuilder::addFields((Constant*)addr, kc, parent); 
       }
-		void build(ConstantAggregateZero* cnst, KnowledgeConstruction &kc, char* parent) {
+		void build(ConstantAggregateZero* cnst, KnowledgeConstruction* kc, char* parent) {
 			open();
 			addFields(cnst, kc, parent);
 			close();
-			std::string &str = getCompletedString();
+			std::string str = getCompletedString();
 			kc.addToKnowledgeBase((PointerAddress)cnst, str);
 		}
 };
 class CLIPSConstantArrayBuilder : public CLIPSConstantBuilder {
    public:
       CLIPSConstantArrayBuilder(std::string nm, FunctionNamer& namer) : CLIPSConstantBuilder(nm, "ConstantArray", namer) { }
-      void addFields(ConstantArray* addr, KnowledgeConstruction &kc, char* parent) {
+      void addFields(ConstantArray* addr, KnowledgeConstruction* kc, char* parent) {
          CLIPSConstantBuilder::addFields((Constant*)addr, kc, parent); 
       }
-		void build(ConstantArray* cnst, KnowledgeConstruction &kc, char* parent) {
+		void build(ConstantArray* cnst, KnowledgeConstruction* kc, char* parent) {
 			open();
 			addFields(cnst, kc, parent);
 			close();
-			std::string &str = getCompletedString();
+			std::string str = getCompletedString();
 			kc.addToKnowledgeBase((PointerAddress)cnst, str);
 		}
 };
@@ -96,7 +99,7 @@ class CLIPSConstantArrayBuilder : public CLIPSConstantBuilder {
 class CLIPSConstantExpressionBuilder : public CLIPSConstantBuilder {
    public:
       CLIPSConstantExpressionBuilder(std::string nm, FunctionNamer& namer) : CLIPSConstantBuilder(nm, "ConstantExpression", namer) { }
-      void addFields(ConstantExpr* addr, KnowledgeConstruction &kc, char* parent) {
+      void addFields(ConstantExpr* addr, KnowledgeConstruction* kc, char* parent) {
          CLIPSConstantBuilder::addFields((Constant*)addr, kc, parent); 
          if(addr->isCast()) addTrueField("IsCast");
          if(addr->isCompare()) addTrueField("IsCompare");
@@ -116,7 +119,7 @@ class CLIPSConstantExpressionBuilder : public CLIPSConstantBuilder {
 			open();
 			addFields(cnst, kc, parent);
 			close();
-			std::string &str = getCompletedString();
+			std::string str = getCompletedString();
 			kc.addToKnowledgeBase((PointerAddress)cnst, str);
 		}
 };
@@ -174,7 +177,7 @@ class CLIPSConstantFloatingPointBuilder : public CLIPSConstantBuilder {
 			open();
 			addFields(cnst, kc, parent);
 			close();
-			std::string &str = getCompletedString();
+			std::string str = getCompletedString();
 			kc.addToKnowledgeBase((PointerAddress)cnst, str);
 		}
 };
@@ -203,7 +206,7 @@ class CLIPSConstantIntegerBuilder : public CLIPSConstantBuilder {
 			open();
 			addFields(cnst, kc, parent);
 			close();
-			std::string &str = getCompletedString();
+			std::string str = getCompletedString();
 			kc.addToKnowledgeBase((PointerAddress)cnst, str);
 		}
 };
@@ -211,14 +214,14 @@ class CLIPSConstantIntegerBuilder : public CLIPSConstantBuilder {
 class CLIPSConstantPointerNullBuilder : public CLIPSConstantBuilder {
    public:
       CLIPSConstantPointerNullBuilder(std::string nm, FunctionNamer& namer) : CLIPSConstantBuilder(nm, "ConstantPointerNull", namer) { }
-      void addFields(ConstantPointerNull* addr, KnowledgeConstruction &kc, char* parent) {
+      void addFields(ConstantPointerNull* addr, KnowledgeConstruction *kc, char* parent) {
          CLIPSConstantBuilder::addFields((Constant*)addr, kc, parent); 
       }
-		void build(ConstantPointerNull* cnst, KnowledgeConstruction &kc, char* parent) {
+		void build(ConstantPointerNull* cnst, KnowledgeConstruction *kc, char* parent) {
 			open();
 			addFields(cnst, kc, parent);
 			close();
-			std::string &str = getCompletedString();
+			std::string str = getCompletedString();
 			kc.addToKnowledgeBase((PointerAddress)cnst, str);
 		}
 };
@@ -226,14 +229,14 @@ class CLIPSConstantPointerNullBuilder : public CLIPSConstantBuilder {
 class CLIPSConstantStructBuilder : public CLIPSConstantBuilder {
    public:
       CLIPSConstantStructBuilder(std::string nm, FunctionNamer& namer) : CLIPSConstantBuilder(nm, "ConstantStruct", namer) { }
-      void addFields(ConstantStruct* addr, KnowledgeConstruction &kc, char* parent) {
+      void addFields(ConstantStruct* addr, KnowledgeConstruction* kc, char* parent) {
          CLIPSConstantBuilder::addFields((Constant*)addr, kc, parent); 
       }
-		void build(ConstantStruct* cnst, KnowledgeConstruction &kc, char* parent) {
+		void build(ConstantStruct* cnst, KnowledgeConstruction* kc, char* parent) {
 			open();
 			addFields(cnst, kc, parent);
 			close();
-			std::string &str = getCompletedString();
+			std::string str = getCompletedString();
 			kc.addToKnowledgeBase((PointerAddress)cnst, str);
 		}
 };
@@ -241,15 +244,15 @@ class CLIPSConstantStructBuilder : public CLIPSConstantBuilder {
 class CLIPSConstantVectorBuilder : public CLIPSConstantBuilder {
    public:
       CLIPSConstantVectorBuilder(std::string nm, FunctionNamer& namer) : CLIPSConstantBuilder(nm, "ConstantVector", namer) { }
-      void addFields(ConstantVector* addr, KnowledgeConstruction &kc, char* parent) {
+      void addFields(ConstantVector* addr, KnowledgeConstruction* kc, char* parent) {
          CLIPSConstantBuilder::addFields((Constant*)addr, kc, parent); 
-         addField("SplatValue", kc.route(addr->getSplatValue(), getNamer()));
+         addField("SplatValue", kc->route(addr->getSplatValue(), getNamer()));
       }
-		void build(ConstantVector* cnst, KnowledgeConstruction &kc, char* parent) {
+		void build(ConstantVector* cnst, KnowledgeConstruction *kc, char* parent) {
 			open();
 			addFields(cnst, kc, parent);
 			close();
-			std::string &str = getCompletedString();
+			std::string str = getCompletedString();
 			kc.addToKnowledgeBase((PointerAddress)cnst, str);
 		}
 };
@@ -258,7 +261,7 @@ class CLIPSGlobalValueBuilder : public CLIPSConstantBuilder
 {
    public:
       CLIPSGlobalValueBuilder(std::string nm, std::string ty, FunctionNamer& namer) : CLIPSConstantBuilder(nm, ty, namer) { }
-      void addFields(GlobalValue* addr, KnowledgeConstruction &kc, char* parent) {
+      void addFields(GlobalValue* addr, KnowledgeConstruction *kc, char* parent) {
          CLIPSConstantBuilder::addFields((Constant*)addr, kc, parent); 
          addField("Alignment", addr->getAlignment());
          if(addr->hasUnnamedAddr()) addTrueField("HasUnnamedAddr"); 
@@ -287,11 +290,11 @@ class CLIPSGlobalValueBuilder : public CLIPSConstantBuilder
          if(addr->mayBeOverridden()) addTrueField("MayBeOverridden");
          if(addr->isWeakForLinker()) addTrueField("IsWeakForLinker");
       }
-		void build(GlobalValue* cnst, KnowledgeConstruction &kc, char* parent) {
+		void build(GlobalValue* cnst, KnowledgeConstruction *kc, char* parent) {
 			open();
 			addFields(cnst, kc, parent);
 			close();
-			std::string &str = getCompletedString();
+			std::string str = getCompletedString();
 			kc.addToKnowledgeBase((PointerAddress)cnst, str);
 		}
 };
@@ -301,15 +304,15 @@ class CLIPSGlobalAliasBuilder : public CLIPSGlobalValueBuilder {
    public:
       CLIPSGlobalAliasBuilder(std::string nm, FunctionNamer& namer) 
          : CLIPSGlobalValueBuilder(nm, "GlobalAlias", namer) { }
-      void addFields(GlobalAlias* addr, KnowledgeConstruction &kc, char* parent) {
+      void addFields(GlobalAlias* addr, KnowledgeConstruction *kc, char* parent) {
          CLIPSGlobalValueBuilder::addFields((GlobalValue*)addr, kc, parent); 
          addField("Aliasee", kc.route(addr->getAliasee(), getNamer()));
       }
-		void build(GlobalAlias* cnst, KnowledgeConstruction &kc, char* parent) {
+		void build(GlobalAlias* cnst, KnowledgeConstruction *kc, char* parent) {
 			open();
 			addFields(cnst, kc, parent);
 			close();
-			std::string &str = getCompletedString();
+			std::string str = getCompletedString();
 			kc.addToKnowledgeBase((PointerAddress)cnst, str);
 		}
 };
@@ -319,7 +322,7 @@ class CLIPSGlobalVariableBuilder : public CLIPSGlobalValueBuilder {
       CLIPSGlobalVariableBuilder(std::string nm, FunctionNamer& namer) 
          : CLIPSGlobalValueBuilder(nm, "GlobalVariable", namer) { }
 
-      void addFields(GlobalVariable* addr, KnowledgeConstruction &kc, char* parent) {
+      void addFields(GlobalVariable* addr, KnowledgeConstruction *kc, char* parent) {
          CLIPSGlobalValueBuilder::addFields((GlobalValue*)addr, kc, parent); 
          if(addr->hasInitializer()) {
             addTrueField("HasInitializer");
@@ -330,11 +333,11 @@ class CLIPSGlobalVariableBuilder : public CLIPSGlobalValueBuilder {
          if(addr->isConstant()) addTrueField("IsConstant"); 
          //if(addr->isThreadLocal()) addTrueField("IsThreadLocal");
       }
-		void build(GlobalVariable* cnst, KnowledgeConstruction &kc, char* parent) {
+		void build(GlobalVariable* cnst, KnowledgeConstruction *kc, char* parent) {
 			open();
 			addFields(cnst, kc, parent);
 			close();
-			std::string &str = getCompletedString();
+			std::string str = getCompletedString();
 			kc.addToKnowledgeBase((PointerAddress)cnst, str);
 		}
 };
@@ -344,16 +347,17 @@ class CLIPSUndefValueBuilder : public CLIPSConstantBuilder {
       CLIPSUndefValueBuilder(std::string nm, FunctionNamer& namer) : 
          CLIPSConstantBuilder(nm, "UndefValue", namer) { }
 
-      void addFields(UndefValue* addr, KnowledgeConstruction &kc, char* parent) {
+      void addFields(UndefValue* addr, KnowledgeConstruction *kc, char* parent) {
          CLIPSConstantBuilder::addFields((Constant*)addr, kc, parent); 
       }
-		void build(UndefValue* cnst, KnowledgeConstruction &kc, char* parent) {
+		void build(UndefValue* cnst, KnowledgeConstruction *kc, char* parent) {
 			open();
 			addFields(cnst, kc, parent);
 			close();
-			std::string &str = getCompletedString();
+			std::string str = getCompletedString();
 			kc.addToKnowledgeBase((PointerAddress)cnst, str);
 		}
 };
 
+#undef make_build_method
 #endif

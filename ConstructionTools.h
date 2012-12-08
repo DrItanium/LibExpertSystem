@@ -32,8 +32,9 @@
 extern "C" {
 #include "clips.h"
 }
-#include "Routers.h"
+//#include "Routers.h"
 #define CharBuffer(size) (char*)calloc(size, sizeof(char))
+
 using namespace llvm;
 class CLIPSObjectBuilder {
    private:
@@ -93,21 +94,21 @@ class CLIPSObjectBuilder {
       void open();
       void close();
       void convertToKnowledge(void* theEnv);
-      void addFields(PointerAddress pointer, KnowledgeConstruction &kc, char* parent);
+      void addFields(PointerAddress pointer, KnowledgeConstruction* kc, char* parent);
 };
 
 class CLIPSValueBuilder : public CLIPSObjectBuilder {
    public:
       CLIPSValueBuilder(std::string nm, std::string ty, FunctionNamer& namer);
       void setType(KnowledgeConstruction &kc, Type* t);
-      void addFields(Value* val, KnowlegeConstruction &kc, char* parent);
-		void build(Value* val, KnowlegeConstruction &kc, char* parent);
+      void addFields(Value* val, KnowledgeConstruction* kc, char* parent);
+		void build(Value* val, KnowledgeConstruction* kc, char* parent);
 };
 class CLIPSUserBuilder : public CLIPSValueBuilder {
    public:
       CLIPSUserBuilder(std::string nm, std::string ty, FunctionNamer& namer);
-      void addFields(User* user, KnowledgeConstruction &kc, char* parent);
-		void build(User* user, KnowledgeConstruction &kc, char* parent);
+      void addFields(User* user, KnowledgeConstruction* kc, char* parent);
+		void build(User* user, KnowledgeConstruction* kc, char* parent);
 };
 //Thank you DOSBOX for this little tidbit :D
 #endif

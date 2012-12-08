@@ -50,7 +50,7 @@ class CLIPSLoopBuilder : public CLIPSObjectBuilder {
 			open();
 			addFields(loop, kc, parent);
 			close();
-			std::string &str = getCompletedString();
+			std::string str = getCompletedString();
 			kc.addToKnowledgeBase((PointerAddress)loop, str); 
 		}
 };

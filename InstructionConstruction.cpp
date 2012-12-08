@@ -2,15 +2,15 @@
 #include "llvm/ADT/SmallSet.h"
 #include "llvm/ADT/DenseMap.h"
 #define make_build_method(cname,iname) \
-	void CLIPS ## cname ## Builder ::build ( iname * inst, KnowledgeConstruction &kc, char* parent) { \
-		this->open(); \
-		this->addFields(inst, kc, parent); \
-		this->close(); \
-		std::string &str = this->getCompletedString();
-		kc.addToKnowledgeBase((PointerAddress) inst, str);\
+	void CLIPS ## cname ## Builder ::build ( iname * inst, KnowledgeConstruction* kc, char* parent) { \
+		open(); \
+		addFields(inst, kc, parent); \
+		close(); \
+		std::string str = getCompletedString(); \
+		kc->addToKnowledgeBase((PointerAddress) inst, str);\
 	}
 
-void CLIPSInstructionBuilder::addFields(Instruction* instruction, KnowledgeConstruction &kc, char* parent, bool addDestinationRegisters) {
+void CLIPSInstructionBuilder::addFields(Instruction* instruction, KnowledgeConstruction *kc, char* parent, bool addDestinationRegisters) {
    User* tmp = (User*)instruction;
    CLIPSUserBuilder::addFields(tmp, kc, parent);
    FunctionNamer& namer = getNamer();
@@ -47,7 +47,7 @@ void CLIPSInstructionBuilder::addFields(Instruction* instruction, KnowledgeConst
          } else if(isa<Function>(target) || isa<Instruction>(target)) {
             appendValue(target->getName());
          } else {
-            appendValue(kc.route(target, namer));
+            appendValue(kc->route(target, namer));
          }
       }
       closeField();
@@ -64,7 +64,7 @@ void CLIPSInstructionBuilder::addFields(Instruction* instruction, KnowledgeConst
 }
 make_build_method(Instruction,Instruction)
 /*
-void CLIPSInstructionBuilder::build(Instruction* inst, KnowledgeConstruction &kc, char* parent) {
+void CLIPSInstructionBuilder::build(Instruction* inst, KnowledgeConstruction *kc, char* parent) {
 	open();
 	addFields(inst, kc, parent);
 	close();
@@ -72,7 +72,7 @@ void CLIPSInstructionBuilder::build(Instruction* inst, KnowledgeConstruction &kc
 	kc.addToKnowledgeBase((PointerAddress)inst, str);
 }
 */
-void CLIPSPHINodeBuilder::addFields(PHINode* instruction, KnowledgeConstruction &kc, char* parent)
+void CLIPSPHINodeBuilder::addFields(PHINode* instruction, KnowledgeConstruction *kc, char* parent)
 {
    //I don't think we want to do User's addField as it's not necessary
    //We should do Value instead
@@ -103,7 +103,7 @@ void CLIPSPHINodeBuilder::addFields(PHINode* instruction, KnowledgeConstruction 
       BasicBlock* from = instruction->getIncomingBlock(i);
       if(isa<UndefValue>(target)) appendValue("undef");
       else if(Instruction* inst = dyn_cast<Instruction>(target)) appendValue(inst->getName());
-      else appendValue(kc.route(target, namer));
+      else appendValue(kc->route(target, namer));
       appendValue(from->getName());
    }
    closeField();
@@ -147,7 +147,7 @@ void CLIPSPHINodeBuilder::addFields(PHINode* instruction, KnowledgeConstruction 
          } else if(isa<Function>(target) || isa<Instruction>(target)) {
             appendValue(target->getName());
          } else {
-            appendValue(kc.route(target, namer));
+            appendValue(kc->route(target, namer));
          }
       }
       closeField();
@@ -163,7 +163,7 @@ void CLIPSPHINodeBuilder::addFields(PHINode* instruction, KnowledgeConstruction 
    }
 }
 make_build_method(PHINode, PHINode)
-void CLIPSStoreInstructionBuilder::addFields(StoreInst* target, KnowledgeConstruction &kc, char* parent) {
+void CLIPSStoreInstructionBuilder::addFields(StoreInst* target, KnowledgeConstruction *kc, char* parent) {
    CLIPSInstructionBuilder::addFields((Instruction*)target, kc, parent, false);
    addField("Alignment", target->getAlignment());  
    if(target->isAtomic()) addTrueField("IsAtomic");
@@ -175,11 +175,11 @@ void CLIPSStoreInstructionBuilder::addFields(StoreInst* target, KnowledgeConstru
    if(pointer->hasName()) {
       appendValue(pointer->getName());
    } else {
-      appendValue(kc.route(pointer, getNamer()));
+      appendValue(kc->route(pointer, getNamer()));
    }
    closeField();
 }
-void CLIPSBinaryOperatorBuilder::addFields(BinaryOperator* target, KnowledgeConstruction &kc, char* parent) {
+void CLIPSBinaryOperatorBuilder::addFields(BinaryOperator* target, KnowledgeConstruction *kc, char* parent) {
    CLIPSInstructionBuilder::addFields((Instruction*)target, kc, parent);
    if(target->hasNoUnsignedWrap()) addTrueField("HasNoUnsignedWrap");
    if(target->hasNoSignedWrap()) addTrueField("HasNoSignedWrap");
@@ -187,7 +187,7 @@ void CLIPSBinaryOperatorBuilder::addFields(BinaryOperator* target, KnowledgeCons
 }
 make_build_method(BinaryOperator, BinaryOperator)
 
-void CLIPSCallInstructionBuilder::addFields(CallInst* target, KnowledgeConstruction &kc, char* parent) {
+void CLIPSCallInstructionBuilder::addFields(CallInst* target, KnowledgeConstruction *kc, char* parent) {
    CLIPSInstructionBuilder::addFields((Instruction*)target, kc, parent);
    if(target->isTailCall()) addTrueField("IsTailCall");
    if(target->isNoInline()) addTrueField("IsNoInline"); 
@@ -210,19 +210,19 @@ void CLIPSCallInstructionBuilder::addFields(CallInst* target, KnowledgeConstruct
       FunctionNamer& namer = getNamer();
       for(unsigned i = 0; i < target->getNumArgOperands(); ++i) {
          //add function args
-         appendValue(kc.route(target->getArgOperand(i), namer));
+         appendValue(kc->route(target->getArgOperand(i), namer));
       }
       closeField();
    }
 }
 make_build_method(CallInstruction,CallInst)
 
-void CLIPSVAArgInstructionBuilder::addFields(VAArgInst* inst, KnowledgeConstruction &kc, char* parent) {
+void CLIPSVAArgInstructionBuilder::addFields(VAArgInst* inst, KnowledgeConstruction *kc, char* parent) {
    CLIPSUnaryInstructionBuilder::addFields((UnaryInstruction*)inst, kc, parent);
 }
 make_build_method(VAArgInstruction, VAArgInst)
 
-void CLIPSLoadInstructionBuilder::addFields(LoadInst* inst, KnowledgeConstruction &kc, char* parent) {
+void CLIPSLoadInstructionBuilder::addFields(LoadInst* inst, KnowledgeConstruction *kc, char* parent) {
    CLIPSUnaryInstructionBuilder::addFields((UnaryInstruction*)inst, kc, parent);
    addField("Alignment", inst->getAlignment());  
    if(inst->isAtomic()) addTrueField("IsAtomic");
@@ -232,9 +232,9 @@ void CLIPSLoadInstructionBuilder::addFields(LoadInst* inst, KnowledgeConstructio
 }
 make_build_method(LoadInstruction, LoadInst)
 
-void CLIPSExtractValueInstructionBuilder::addFields(ExtractValueInst* inst, KnowledgeConstruction &kc, char* parent) {
+void CLIPSExtractValueInstructionBuilder::addFields(ExtractValueInst* inst, KnowledgeConstruction *kc, char* parent) {
    CLIPSUnaryInstructionBuilder::addFields((UnaryInstruction*)inst, kc, parent);
-   addField("AggregateOperand", kc.route(inst->getAggregateOperand(), getNamer()));
+   addField("AggregateOperand", kc->route(inst->getAggregateOperand(), getNamer()));
    openField("Indices");
    for(ExtractValueInst::idx_iterator i = inst->idx_begin(), e = inst->idx_end();
          i != e; ++i) {
@@ -248,44 +248,44 @@ void CLIPSExtractValueInstructionBuilder::addFields(ExtractValueInst* inst, Know
 
 make_build_method(ExtractValueInstruction, ExtractValueInst)
 
-void CLIPSCastInstructionBuilder::addFields(CastInst* inst, KnowledgeConstruction &kc, char* parent) {
+void CLIPSCastInstructionBuilder::addFields(CastInst* inst, KnowledgeConstruction *kc, char* parent) {
    CLIPSUnaryInstructionBuilder::addFields((UnaryInstruction*)inst, kc, parent);
    if(inst->isIntegerCast()) addTrueField("IsIntegerCast");
    if(inst->isLosslessCast()) addTrueField("IsLosslessCast");
    FunctionNamer& namer = getNamer();
-   addField("SourceType", kc.route(inst->getSrcTy(), namer)); 
-   addField("DestinationType", kc.route(inst->getDestTy(), namer));
+   addField("SourceType", kc->route(inst->getSrcTy(), namer)); 
+   addField("DestinationType", kc->route(inst->getDestTy(), namer));
 }
 make_build_method(CastInstruction, CastInst)
 
-void CLIPSAllocaInstructionBuilder::addFields(AllocaInst* inst, KnowledgeConstruction &kc, char* parent) {
+void CLIPSAllocaInstructionBuilder::addFields(AllocaInst* inst, KnowledgeConstruction *kc, char* parent) {
    CLIPSUnaryInstructionBuilder::addFields((UnaryInstruction*)inst, kc, parent);
    if(inst->isArrayAllocation()) addTrueField("IsArrayAllocation");
    if(inst->isStaticAlloca()) addTrueField("IsStaticAllocation");
    addField("Alignment", inst->getAlignment());
-   addField("ArraySize", kc.route(inst->getArraySize(), getNamer()));
+   addField("ArraySize", kc->route(inst->getArraySize(), getNamer()));
 }
 make_build_method(AllocaInstruction, AllocaInst)
 
-void CLIPSUnaryInstructionBuilder::addFields(UnaryInstruction* inst, KnowledgeConstruction &kc, char* parent) {
+void CLIPSUnaryInstructionBuilder::addFields(UnaryInstruction* inst, KnowledgeConstruction *kc, char* parent) {
    CLIPSInstructionBuilder::addFields((Instruction*)inst, kc, parent);
 }
 make_build_method(UnaryInstruction, UnaryInstruction)
 
-void CLIPSSelectInstructionBuilder::addFields(SelectInst* inst, KnowledgeConstruction &kc, char* parent) {
+void CLIPSSelectInstructionBuilder::addFields(SelectInst* inst, KnowledgeConstruction *kc, char* parent) {
    CLIPSInstructionBuilder::addFields((Instruction*)inst, kc, parent);
    FunctionNamer& namer = getNamer();
-   addField("Condition", kc.route(inst->getCondition(), namer));
-   addField("TrueValue", kc.route(inst->getTrueValue(), namer));
-   addField("FalseValue", kc.route(inst->getFalseValue(), namer));
+   addField("Condition", kc->route(inst->getCondition(), namer));
+   addField("TrueValue", kc->route(inst->getTrueValue(), namer));
+   addField("FalseValue", kc->route(inst->getFalseValue(), namer));
 }
 make_build_method(SelectInstruction, SelectInst)
-void CLIPSUnreachableInstructionBuilder::addFields(UnreachableInst* instruction, KnowledgeConstruction &kc, char* parent) {
+void CLIPSUnreachableInstructionBuilder::addFields(UnreachableInst* instruction, KnowledgeConstruction *kc, char* parent) {
    CLIPSTerminatorInstructionBuilder::addFields((TerminatorInst*)instruction, kc, parent);
 }
 make_build_method(UnreachableInstruction, UnreachableInst)
 
-void CLIPSCompareInstructionBuilder::addFields(CmpInst* target, KnowledgeConstruction &kc, char* parent) {
+void CLIPSCompareInstructionBuilder::addFields(CmpInst* target, KnowledgeConstruction *kc, char* parent) {
    CLIPSInstructionBuilder::addFields((Instruction*)target, kc, parent);
    addField("Predicate", target->getPredicate());
    addField("InversePredicate", target->getInversePredicate());
@@ -300,20 +300,20 @@ void CLIPSCompareInstructionBuilder::addFields(CmpInst* target, KnowledgeConstru
    if(target->isFalseWhenEqual()) addTrueField("IsFalseWhenEqual");
 }
 make_build_method(CompareInstruction, CmpInst)
-void CLIPSFPCompareInstructionBuilder::addFields(FCmpInst* target, KnowledgeConstruction &kc, char* parent) {
+void CLIPSFPCompareInstructionBuilder::addFields(FCmpInst* target, KnowledgeConstruction *kc, char* parent) {
    CLIPSCompareInstructionBuilder::addFields((CmpInst*)target,kc,parent);
    if(target->isRelational()) addTrueField("IsRelational");
 }
 make_build_method(FPCompareInstruction, FCmpInst)
 
-void CLIPSIntCompareInstructionBuilder::addFields(ICmpInst* target, KnowledgeConstruction &kc, char* parent) {
+void CLIPSIntCompareInstructionBuilder::addFields(ICmpInst* target, KnowledgeConstruction *kc, char* parent) {
    CLIPSCompareInstructionBuilder::addFields((CmpInst*)target,kc, parent);
    addField("SignedPredicate", target->getSignedPredicate());
    addField("UnsignedPredicate", target->getUnsignedPredicate());
    if(target->isRelational()) addTrueField("IsRelational");
 }
 make_build_method(IntCompareInstruction, ICmpInst)
-void CLIPSGetElementPtrInstructionBuilder::addFields(GetElementPtrInst* target, KnowledgeConstruction &kc, char* parent) {
+void CLIPSGetElementPtrInstructionBuilder::addFields(GetElementPtrInst* target, KnowledgeConstruction *kc, char* parent) {
    CLIPSInstructionBuilder::addFields((Instruction*)target, kc, parent);
    if(target->hasIndices()) addTrueField("HasIndices");
    if(target->hasAllZeroIndices()) addTrueField("HasAllZeroIndices");
@@ -322,29 +322,29 @@ void CLIPSGetElementPtrInstructionBuilder::addFields(GetElementPtrInst* target, 
 }
 make_build_method(GetElementPtrInstruction, GetElementPtrInst)
 
-void CLIPSTerminatorInstructionBuilder::addFields(TerminatorInst* target, KnowledgeConstruction &kc, char* parent) {
+void CLIPSTerminatorInstructionBuilder::addFields(TerminatorInst* target, KnowledgeConstruction *kc, char* parent) {
    CLIPSInstructionBuilder::addFields((Instruction*)target, kc, parent);
    addField("NumSuccessors", target->getNumSuccessors());
 }
 make_build_method(TerminatorInstruction, TerminatorInst)
 
-void CLIPSBranchInstructionBuilder::addFields(BranchInst* inst, KnowledgeConstruction &kc, char* parent) {
+void CLIPSBranchInstructionBuilder::addFields(BranchInst* inst, KnowledgeConstruction *kc, char* parent) {
    CLIPSTerminatorInstructionBuilder::addFields((TerminatorInst*)inst, kc, parent);
    if(inst->isUnconditional()) addTrueField("IsUnconditional");
    if(inst->isConditional()) {
       addTrueField("IsConditional");
-      addField("Condition", kc.route(inst->getCondition(), getNamer()));
+      addField("Condition", kc->route(inst->getCondition(), getNamer()));
    }
 }
 make_build_method(BranchInstruction, BranchInst)
 
-void CLIPSIndirectBranchInstructionBuilder::addFields(IndirectBrInst* inst, KnowledgeConstruction &kc, char* parent) {
+void CLIPSIndirectBranchInstructionBuilder::addFields(IndirectBrInst* inst, KnowledgeConstruction *kc, char* parent) {
    CLIPSTerminatorInstructionBuilder::addFields((TerminatorInst*)inst, kc, parent);
-   addField("Address", kc.route(inst->getAddress(), getNamer()));
+   addField("Address", kc->route(inst->getAddress(), getNamer()));
 }
 make_build_method(IndirectBranchInstruction, IndirectBrInst)
 
-void CLIPSInvokeInstructionBuilder::addFields(InvokeInst* target, KnowledgeConstruction &kc, char* parent) {
+void CLIPSInvokeInstructionBuilder::addFields(InvokeInst* target, KnowledgeConstruction *kc, char* parent) {
    CLIPSTerminatorInstructionBuilder::addFields((TerminatorInst*)target, kc, parent);
    if(target->isNoInline()) addTrueField("IsNoInline");
    if(target->doesNotAccessMemory()) addTrueField("DoesNotAccessMemory");
@@ -367,41 +367,26 @@ void CLIPSInvokeInstructionBuilder::addFields(InvokeInst* target, KnowledgeConst
       openField("Arguments");
       FunctionNamer& namer = getNamer();
       for(unsigned i = 0;i < target->getNumArgOperands(); ++i) {
-         appendValue(kc.route(target->getArgOperand(i), namer));
+         appendValue(kc->route(target->getArgOperand(i), namer));
       }
       closeField();
    }
 }
-void CLIPSInvokeInstructionBuilder::build(InvokeInst* inst, KnowledgeConstruction &kc, char* parent) {
-	open();
-	addFields(inst, kc, parent);
-	close();
-	std::string &str = getCompletedString();
-	kc.addToKnowledgeBase((PointerAddress)inst, str);
-}
-void CLIPSResumeInstructionBuilder::addFields(ResumeInst* inst, KnowledgeConstruction &kc, char* parent) {
+make_build_method(InvokeInstruction, InvokeInst)
+
+void CLIPSResumeInstructionBuilder::addFields(ResumeInst* inst, KnowledgeConstruction *kc, char* parent) {
    CLIPSTerminatorInstructionBuilder::addFields((TerminatorInst*)inst, kc, parent);
 }
-void CLIPSResumeInstructionBuilder::build(ResumeInst* inst, KnowledgeConstruction &kc, char* parent) {
-	open();
-	addFields(inst, kc, parent);
-	close();
-	std::string &str = getCompletedString();
-	kc.addToKnowledgeBase((PointerAddress)inst, str);
-}
-void CLIPSReturnInstructionBuilder::addFields(ReturnInst* inst, KnowledgeConstruction &kc, char* parent) {
+make_build_method(ResumeInstruction, ResumeInst)
+
+void CLIPSReturnInstructionBuilder::addFields(ReturnInst* inst, KnowledgeConstruction *kc, char* parent) {
    CLIPSTerminatorInstructionBuilder::addFields((TerminatorInst*)inst, kc, parent);
    Value* result = inst->getReturnValue();
-   if(result != 0) addField("ReturnValue", kc.route(result, getNamer()));
+   if(result != 0) addField("ReturnValue", kc->route(result, getNamer()));
 }
-void CLIPSReturnInstructionBuilder::build(ReturnInst* inst, KnowledgeConstruction &kc, char* parent) {
-	open();
-	addFields(inst, kc, parent);
-	close();
-	std::string &str = getCompletedString();
-	kc.addToKnowledgeBase((PointerAddress)inst, str);
-}
-void CLIPSSwitchInstructionBuilder::addFields(SwitchInst* inst, KnowledgeConstruction &kc, char* parent) {
+make_build_method(ReturnInstruction, ReturnInst)
+
+void CLIPSSwitchInstructionBuilder::addFields(SwitchInst* inst, KnowledgeConstruction *kc, char* parent) {
    CLIPSValueBuilder::addFields((Value*)inst, kc, parent);
    std::string par(parent);
    FunctionNamer& namer = getNamer();
@@ -420,7 +405,7 @@ void CLIPSSwitchInstructionBuilder::addFields(SwitchInst* inst, KnowledgeConstru
    if(inst->isLogicalShift()) addTrueField("IsLogicalShift");
    if(inst->isAssociative()) addTrueField("IsAssociative");
    if(inst->isCommutative()) addTrueField("IsCommutative");
-   addField("Condition", kc.route(inst->getCondition(), getNamer()));
+   addField("Condition", kc->route(inst->getCondition(), getNamer()));
    addField("DefaultDestination", inst->getDefaultDest()->getName());
    unsigned succCount = inst->getNumSuccessors();
    if(succCount > 0) {
@@ -434,12 +419,6 @@ void CLIPSSwitchInstructionBuilder::addFields(SwitchInst* inst, KnowledgeConstru
       closeField();
    }
 }
-void CLIPSSwitchInstructionBuilder::build(SwitchInst* inst, KnowledgeConstruction &kc, char* parent) {
-	open();
-	addFields(inst, kc, parent);
-	close();
-	std::string &str = getCompletedString();
-	kc.addToKnowledgeBase((PointerAddress)inst, str);
-}
+make_build_method(SwitchInstruction, SwitchInst)
 
 #undef make_build_method

@@ -1,7 +1,7 @@
 #include "ConstructionTools.h"
 using namespace llvm;
 CLIPSValueBuilder::CLIPSValueBuilder(std::string nm, std::string ty, FunctionNamer& namer) : CLIPSObjectBuilder(nm, ty, namer) { }
-void CLIPSValueBuilder::setType(KnowledgeConstruction &kc, Type* t) {
+void CLIPSValueBuilder::setType(KnowledgeConstruction *kc, Type* t) {
 	PointerAddress ptr = (PointerAddress)t;
    FunctionNamer& namer = getNamer();
    if(namer.pointerRegistered(ptr)) {
@@ -11,7 +11,7 @@ void CLIPSValueBuilder::setType(KnowledgeConstruction &kc, Type* t) {
    }
 }
 
-void CLIPSValueBuilder::addFields(Value* val, KnowledgeConstruction &kc, char* parent) {
+void CLIPSValueBuilder::addFields(Value* val, KnowledgeConstruction *kc, char* parent) {
 	CLIPSObjectBuilder::addFields((PointerAddress)val, kc, parent);
 	setType(kc, val->getType());
 	addField("Name", val->getName());
@@ -25,10 +25,10 @@ void CLIPSValueBuilder::addFields(Value* val, KnowledgeConstruction &kc, char* p
    }
 }
 
-void CLIPSValueBuilder::build(Value* val, KnowledgeConstruction &kc, char* parent) {
+void CLIPSValueBuilder::build(Value* val, KnowledgeConstruction *kc, char* parent) {
 	open();
 	addFields(val, kc, parent);
 	close();
 	std::string &str = getCompletedString();
-	kc.addToKnowledgeBase((PointerAddress)val, str);
+	kc->addToKnowledgeBase((PointerAddress)val, str);
 }

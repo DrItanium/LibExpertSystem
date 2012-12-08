@@ -28,9 +28,7 @@
 #include "llvm/Operator.h"
 #include "llvm/Function.h"
 #include "llvm/Analysis/LoopInfo.h"
-#include "KnowledgeConstructionEngine.h"
 #include "PassDependencies.h"
-#include "EnvironmentCreationPass.h"
 #include "FunctionNamer.h"
 #include "llvm/ADT/DenseSet.h"
 #include "llvm/ADT/DenseMap.h"
@@ -94,11 +92,11 @@ namespace {
 		virtual bool runOnFunction(Function& fn) {
 			char* funcName;
 			//get the function namer object
-			LoopInfo &loops = getAnalysisUsage<LoopInfo>();
-			RegionInfo &regions = getAnalysisUsage<RegionInfo>();
-			FunctionNamer &namer = getAnalysisUsage<FunctionNamer>();
+			LoopInfo &loops = getAnalysis<LoopInfo>();
+			RegionInfo &regions = getAnalysis<RegionInfo>();
+			FunctionNamer &namer = getAnalysis<FunctionNamer>();
 			funcName = (char*)fn.getName().data();
-			fn->reset();
+			namer.reset();
 			instances->clear();
 			updateFunctionContents(fn, namer);
 			route(loops, namer, funcName);
