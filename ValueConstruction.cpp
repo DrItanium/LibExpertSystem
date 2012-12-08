@@ -12,7 +12,7 @@ void CLIPSValueBuilder::setType(KnowledgeConstruction &kc, Type* t) {
 }
 
 void CLIPSValueBuilder::addFields(Value* val, KnowledgeConstruction &kc, char* parent) {
-	CLIPSObjectBuilder::addFields((PointerAddress)val, parent);
+	CLIPSObjectBuilder::addFields((PointerAddress)val, kc, parent);
 	setType(kc, val->getType());
 	addField("Name", val->getName());
 	if(val->isDereferenceablePointer()) addTrueField("IsDereferenceablePointer");
