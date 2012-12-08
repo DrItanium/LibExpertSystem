@@ -47,12 +47,20 @@ namespace {
 	struct KnowledgeConstruction : public FunctionPass {
 		static char ID;
 		llvm::DenseMap<PointerAddress, std::string>* instances;
+		llvm::raw_string_ostream* instanceStream; 
 		public:
 		KnowledgeConstruction() : FunctionPass(ID) {
+			std::string tmp;
 			instances = new llvm::DenseMap<PointerAddress, std::string>();
+			instanceStream = new llvm::raw_string_ostream(tmp);
 		}
 		~KnowledgeConstruction();
+		void resetInstanceStream() {
+			instanceStream->flush();
+		}
 		llvm::DenseMap<PointerAddress, std::string>* getInstances() { return instances; }
+		std::string getInstancesAsString() { return instanceStream->str(); }
+
 		virtual void getAnalysisUsage(AnalysisUsage &Info) const {
 			Info.addRequired<LoopInfo>();
 			Info.addRequired<RegionInfo>();
@@ -62,7 +70,9 @@ namespace {
 			//control over the code
 		}
 		//TODO: add the route commands
-
+		void addToInstanceStream(std::string &instance);
+		void registerInstance(PointerAddress ptrAddress, std::string &instance);
+		void addToKnowledgeBase(PointerAddress ptrAddress, std::string &instance);
 		std::string route(Value* val, FunctionNamer& namer, char* parent);
 		std::string route(Value* val, FunctionNamer& namer);
 		std::string route(User* user, FunctionNamer& namer, char* parent);
@@ -75,6 +85,9 @@ namespace {
 		std::string route(Region* region, FunctionNamer& namer, char* parent);
 		std::string route(Argument* arg, FunctionNamer& namer, char* parent);
 		std::string route(Loop* loop, FunctionNamer& namer, char* parent);
+		std::string route(MDString* mds, FunctionNamer& namer, char* parent);
+		std::string route(MDNode* mdn, FunctionNamer& namer, char* parent);
+		std::string route(InlineAsm* iasm, FunctionNamer& namer, char* parent);
 		void route(RegionInfo& ri, FunctionNamer& namer, char* parent);
 		void route(LoopInfo& li, FunctionNamer& namer, char* parent);
 		void updateFunctionContents(Function& fn, FunctionNamer& namer);
