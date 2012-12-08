@@ -17,7 +17,7 @@ extern "C" {
 }
 using namespace llvm;
 typedef long long PointerAddress;
-namespace {
+namespace llvm {
 	struct FunctionNamer : public FunctionPass {
 		static char ID;
 		PointerAddress gensymID;

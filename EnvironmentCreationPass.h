@@ -12,7 +12,7 @@ extern "C" {
 }
 
 using namespace llvm;
-namespace {
+namespace llvm {
 	typedef long long ExecutionDuration;
 	struct EnvironmentConstruction : public FunctionPass {
 		static char ID;
