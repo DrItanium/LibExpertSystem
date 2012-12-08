@@ -9,10 +9,11 @@
 #include "llvm/Analysis/RegionInfo.h"
 #include "llvm/Support/raw_ostream.h"
 #include "llvm/ADT/DenseSet.h"
-#include "KnowledgeConstructionEngine.h"
 #include "LLVMWrapper.h"
 #include "JSEdgeRemoval.h"
 #include "PassDependencies.h"
+#include "EnvironmentCreationPass.h"
+#include "KnowledgeConstructionPass.h"
 extern "C" {
 #include "clips.h"
 }
@@ -24,29 +25,21 @@ namespace {
       static char ID;
       public:
       WavefrontScheduling() : FunctionPass(ID) {
-         InitializeRuntimeAnalyzer();
       }
       virtual void getAnalysisUsage(AnalysisUsage &Info) const {
-         Info.addRequired<LoopInfo>();
-         Info.addRequired<RegionInfo>();
+			Info.addRequired<KnowledgeConstruction>();
+			Info.addRequired<EnvironmentConstruction>();
       }
       virtual bool runOnFunction(Function& fn) {
          //do not actually wavefront schedule if we only have one block
          if(fn.size() > 1) {
-            char* funcName = (char*)fn.getName().data();
-            DenseMap<PointerAddress, std::string> translation;
-            std::pair<PointerAddress, std::string> pair(0,"nil");
-            translation.insert(pair);
-            FunctionNamer namer (translation);
-            Reset();
-            MakeInstance(nilObject);
-            ModifyFunctionContents(fn, namer);
-            LoopInfo &li = getAnalysis<LoopInfo>();
-            RouteLoopInfo(li, funcName, namer);
-            RegionInfo &ri = getAnalysis<RegionInfo>();
-            llvm::Region* top = ri.getTopLevelRegion();
-            Route(top, funcName, namer);
-            Run(-1L);
+				KnowledgeConstruction &kc = getAnalysis<KnowledgeConstruction>();
+				EnvironmentConstruction &env = getAnalysis<EnvironmentConstruction>();
+				env.batchStar("Init.clp");
+				env.makeInstance(nilObject);
+				env.makeInstances((char*)kc.getInstancesAsString().c_str());
+				env.reset();
+				env.run(-1L);
             return true;
          } else {
             return false;
