@@ -1,13 +1,14 @@
 #ifndef _loop_builder_h
 #define _loop_builder_h
 #include "ConstructionTools.h"
+#include "KnowledgeConstructionPass.h"
 class CLIPSLoopBuilder : public CLIPSObjectBuilder {
    public:
       CLIPSLoopBuilder(std::string nm, FunctionNamer& namer) : CLIPSObjectBuilder(nm, "Loop", namer) { }
-      void addFields(Loop* loop, char* parent) {
+      void addFields(Loop* loop, KnowledgeConstruction &kc, char* parent) {
          char* t = (char*)getName().c_str();
          FunctionNamer& n = getNamer();
-         CLIPSObjectBuilder::addFields((PointerAddress)loop, parent);
+         CLIPSObjectBuilder::addFields((PointerAddress)loop, kc, parent);
          BasicBlock* latch = loop->getLoopLatch();
          BasicBlock* header = loop->getHeader();
          BasicBlock* loopPredecessor = loop->getLoopPredecessor();
@@ -28,13 +29,13 @@ class CLIPSLoopBuilder : public CLIPSObjectBuilder {
          //incorrect nesting of child blocks
          for(Loop::iterator q = loop->begin(), qu = loop->end(); q != qu; ++q) {
             Loop* subLoop = *q;
-            std::string result = Route(subLoop, t, n);
+            std::string result = kc->route(subLoop, t, n);
             appendValue(result);
          }
          for(Loop::block_iterator s = loop->block_begin(), e = loop->block_end(); s != e; ++s) {
             BasicBlock* bb = (*s);
             if(!n.pointerRegistered((PointerAddress)bb)) 
-               appendValue(Route(bb, t, n));
+               appendValue(kc->route(bb, t, n));
          }
          closeField();
          openField("Exits");
@@ -44,13 +45,13 @@ class CLIPSLoopBuilder : public CLIPSObjectBuilder {
             appendValue(bb->getName());
          }
          closeField();
-
       }
-      void build(Loop* loop, char* parent) {
-         open();
-         addFields(loop, parent);
-         close();
-         convertToKnowledge();
-      }
+		void build(Loop* loop, KnowledgeConstruction &kc, char* parent) {
+			open();
+			addFields(loop, kc, parent);
+			close();
+			std::string &str = getCompletedString();
+			kc.addToKnowledgeBase((PointerAddress)loop, str); 
+		}
 };
 #endif
