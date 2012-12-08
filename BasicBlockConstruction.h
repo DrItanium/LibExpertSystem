@@ -44,9 +44,9 @@ class CLIPSBasicBlockBuilder : public CLIPSValueBuilder {
             addField("Produces", data.str()); 
          }
       }
-		void build(BasicBlock* bb, KnowledgeConstruction *kc, char* parent) {
+		void build(BasicBlock* bb, KnowledgeConstruction *kc, char* parent, bool constructInstructions = true) {
 			open();
-			addFields(bb, kc, parent, true);
+			addFields(bb, kc, parent, constructInstructions);
 			close();
 			std::string str = getCompletedString();
 			kc->addToKnowledgeBase((PointerAddress)bb, str);
