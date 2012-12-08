@@ -100,7 +100,7 @@ class CLIPSObjectBuilder {
 class CLIPSValueBuilder : public CLIPSObjectBuilder {
    public:
       CLIPSValueBuilder(std::string nm, std::string ty, FunctionNamer& namer);
-      void setType(KnowledgeConstruction &kc, Type* t);
+      void setType(Type* t, KnowledgeConstruction* kc);
       void addFields(Value* val, KnowledgeConstruction* kc, char* parent);
 		void build(Value* val, KnowledgeConstruction* kc, char* parent);
 };
