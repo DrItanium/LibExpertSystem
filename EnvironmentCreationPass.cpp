@@ -55,4 +55,4 @@ char EnvironmentConstruction::ID = 0;
 INITIALIZE_PASS_BEGIN(EnvironmentConstruction, "environment", "environment constructor", false, false)
 INITIALIZE_PASS_END(EnvironmentConstruction, "environment", "environment constructor", false, false)
 //for opt
-static RegisterPass<EnvironmentConstruction> X("environment", "environment constructor", false, false);
+static RegisterPass<EnvironmentConstruction> env("environment", "environment constructor", false, false);
