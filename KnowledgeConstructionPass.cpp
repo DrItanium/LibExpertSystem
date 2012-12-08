@@ -499,7 +499,7 @@ void KnowledgeConstruction::updateFunctionContents(Function& fn, FunctionNamer& 
 		route(a, namer, fnName);
 	}
 }
-void route(Function& fn, LoopInfo& li, RegionInfo& ri) {
+void KnowledgeConstruction::route(Function& fn, LoopInfo& li, RegionInfo& ri) {
 	char* funcName;
 	//get the function namer object
 	FunctionNamer namer;
