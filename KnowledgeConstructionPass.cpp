@@ -501,9 +501,9 @@ void KnowledgeConstruction::updateFunctionContents(Function& fn, FunctionNamer& 
 }
 
 char KnowledgeConstruction::ID = 0;
-static RegisterPass<KnowledgeConstruction> kc("knowledge", "Knowledge constructor", false, false);
-INITIALIZE_PASS(KnowledgeConstruction, "knowledge", "Knowledge constructor", false, false)
 //for opt
+static RegisterPass<KnowledgeConstruction> kc("knowledge", "Knowledge constructor", false, false);
+//INITIALIZE_PASS(KnowledgeConstruction, "knowledge", "Knowledge constructor", false, false)
 #undef nested_dyn_cast
 #undef simple_dyn_cast
 #undef BuildUpFullExpression

@@ -51,4 +51,4 @@ namespace llvm {
 char WavefrontScheduling::ID = 0;
 //for opt
 static RegisterPass<WavefrontScheduling> wave("wavefront", "Wavefront Scheduling", false, false);
-INITIALIZE_PASS(WavefrontScheduling, "wavefront", "Wavefront Scheduling", false, false)
+//INITIALIZE_PASS(WavefrontScheduling, "wavefront", "Wavefront Scheduling", false, false)
