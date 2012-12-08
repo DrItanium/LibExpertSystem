@@ -1,7 +1,7 @@
 #include "ConstructionTools.h"
 using namespace llvm;
 CLIPSValueBuilder::CLIPSValueBuilder(std::string nm, std::string ty, FunctionNamer& namer) : CLIPSObjectBuilder(nm, ty, namer) { }
-void CLIPSValueBuilder::setType(KnowledgeConstruction *kc, Type* t) {
+void CLIPSValueBuilder::setType(Type* t, KnowledgeConstruction* kc) {
 	PointerAddress ptr = (PointerAddress)t;
    FunctionNamer& namer = getNamer();
    if(namer.pointerRegistered(ptr)) {
@@ -13,7 +13,7 @@ void CLIPSValueBuilder::setType(KnowledgeConstruction *kc, Type* t) {
 
 void CLIPSValueBuilder::addFields(Value* val, KnowledgeConstruction *kc, char* parent) {
 	CLIPSObjectBuilder::addFields((PointerAddress)val, kc, parent);
-	setType(kc, val->getType());
+	setType(val->getType(), kc);
 	addField("Name", val->getName());
 	if(val->isDereferenceablePointer()) addTrueField("IsDereferenceablePointer");
 	if(val->hasValueHandle()) addTrueField("HasValueHandle"); 
