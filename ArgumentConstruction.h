@@ -4,7 +4,7 @@
 class CLIPSArgumentBuilder : public CLIPSValueBuilder {
    public:
       CLIPSArgumentBuilder(std::string nm, FunctionNamer& namer) : CLIPSValueBuilder(nm, "Argument", namer) { }
-      void addFields(Argument* arg, KnowledgeConstruction &kc, char* parent) {
+      void addFields(Argument* arg, KnowledgeConstruction *kc, char* parent) {
          CLIPSValueBuilder::addFields((Value*)arg, kc, parent);
          addField("Index", arg->getArgNo());
          if(arg->hasNestAttr()) addTrueField("HasNestAttribute");
@@ -12,12 +12,12 @@ class CLIPSArgumentBuilder : public CLIPSValueBuilder {
          if(arg->hasNoCaptureAttr()) addTrueField("HasNoCaptureAttribute");
          if(arg->hasStructRetAttr()) addTrueField("HasStructRetAttribute");
       }
-     void build(Argument* arg, KnowledgeConstruction &kc, char* parent) {
+     void build(Argument* arg, KnowledgeConstruction *kc, char* parent) {
 		  open();
 		  addFields(arg, kc, parent);
 		  close();
 		  std::string &str = getCompletedString();
-		  kc.addToKnowledgeBase((PointerAddress)arg, str);
+		  kc->addToKnowledgeBase((PointerAddress)arg, str);
 	  }
 };
 #endif

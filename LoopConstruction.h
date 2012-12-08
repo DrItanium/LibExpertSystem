@@ -5,7 +5,7 @@
 class CLIPSLoopBuilder : public CLIPSObjectBuilder {
    public:
       CLIPSLoopBuilder(std::string nm, FunctionNamer& namer) : CLIPSObjectBuilder(nm, "Loop", namer) { }
-      void addFields(Loop* loop, KnowledgeConstruction &kc, char* parent) {
+      void addFields(Loop* loop, KnowledgeConstruction *kc, char* parent) {
          char* t = (char*)getName().c_str();
          FunctionNamer& n = getNamer();
          CLIPSObjectBuilder::addFields((PointerAddress)loop, kc, parent);
@@ -29,13 +29,13 @@ class CLIPSLoopBuilder : public CLIPSObjectBuilder {
          //incorrect nesting of child blocks
          for(Loop::iterator q = loop->begin(), qu = loop->end(); q != qu; ++q) {
             Loop* subLoop = *q;
-            std::string result = kc.route(subLoop, n, t);
+            std::string result = kc->route(subLoop, n, t);
             appendValue(result);
          }
          for(Loop::block_iterator s = loop->block_begin(), e = loop->block_end(); s != e; ++s) {
             BasicBlock* bb = (*s);
             if(!n.pointerRegistered((PointerAddress)bb)) 
-               appendValue(kc.route(bb, n, t));
+               appendValue(kc->route(bb, n, t));
          }
          closeField();
          openField("Exits");
@@ -46,12 +46,12 @@ class CLIPSLoopBuilder : public CLIPSObjectBuilder {
          }
          closeField();
       }
-		void build(Loop* loop, KnowledgeConstruction &kc, char* parent) {
+		void build(Loop* loop, KnowledgeConstruction *kc, char* parent) {
 			open();
 			addFields(loop, kc, parent);
 			close();
 			std::string str = getCompletedString();
-			kc.addToKnowledgeBase((PointerAddress)loop, str); 
+			kc->addToKnowledgeBase((PointerAddress)loop, str); 
 		}
 };
 #endif

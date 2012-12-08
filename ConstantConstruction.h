@@ -21,7 +21,7 @@ class CLIPSConstantBuilder : public CLIPSUserBuilder {
 			addFields(cnst, kc, parent);
 			close();
 			std::string str = getCompletedString();
-			kc.addToKnowledgeBase((PointerAddress)cnst, str);
+			kc->addToKnowledgeBase((PointerAddress)cnst, str);
 		}
 };
 
@@ -38,7 +38,7 @@ class CLIPSBlockAddressBuilder : public CLIPSConstantBuilder {
 			addFields(cnst, kc, parent);
 			close();
 			std::string str = getCompletedString();
-			kc.addToKnowledgeBase((PointerAddress)cnst, str);
+			kc->addToKnowledgeBase((PointerAddress)cnst, str);
 		}
 };
 class CLIPSConstantAggregateZeroBuilder : public CLIPSConstantBuilder {
@@ -52,7 +52,7 @@ class CLIPSConstantAggregateZeroBuilder : public CLIPSConstantBuilder {
 			addFields(cnst, kc, parent);
 			close();
 			std::string str = getCompletedString();
-			kc.addToKnowledgeBase((PointerAddress)cnst, str);
+			kc->addToKnowledgeBase((PointerAddress)cnst, str);
 		}
 };
 class CLIPSConstantArrayBuilder : public CLIPSConstantBuilder {
@@ -66,7 +66,7 @@ class CLIPSConstantArrayBuilder : public CLIPSConstantBuilder {
 			addFields(cnst, kc, parent);
 			close();
 			std::string str = getCompletedString();
-			kc.addToKnowledgeBase((PointerAddress)cnst, str);
+			kc->addToKnowledgeBase((PointerAddress)cnst, str);
 		}
 };
 /* ConstantDataSequential doesn't exist in llvm 3.0 :/
@@ -120,7 +120,7 @@ class CLIPSConstantExpressionBuilder : public CLIPSConstantBuilder {
 			addFields(cnst, kc, parent);
 			close();
 			std::string str = getCompletedString();
-			kc.addToKnowledgeBase((PointerAddress)cnst, str);
+			kc->addToKnowledgeBase((PointerAddress)cnst, str);
 		}
 };
 
@@ -178,7 +178,7 @@ class CLIPSConstantFloatingPointBuilder : public CLIPSConstantBuilder {
 			addFields(cnst, kc, parent);
 			close();
 			std::string str = getCompletedString();
-			kc.addToKnowledgeBase((PointerAddress)cnst, str);
+			kc->addToKnowledgeBase((PointerAddress)cnst, str);
 		}
 };
 
@@ -207,7 +207,7 @@ class CLIPSConstantIntegerBuilder : public CLIPSConstantBuilder {
 			addFields(cnst, kc, parent);
 			close();
 			std::string str = getCompletedString();
-			kc.addToKnowledgeBase((PointerAddress)cnst, str);
+			kc->addToKnowledgeBase((PointerAddress)cnst, str);
 		}
 };
 
@@ -222,7 +222,7 @@ class CLIPSConstantPointerNullBuilder : public CLIPSConstantBuilder {
 			addFields(cnst, kc, parent);
 			close();
 			std::string str = getCompletedString();
-			kc.addToKnowledgeBase((PointerAddress)cnst, str);
+			kc->addToKnowledgeBase((PointerAddress)cnst, str);
 		}
 };
 
@@ -237,7 +237,7 @@ class CLIPSConstantStructBuilder : public CLIPSConstantBuilder {
 			addFields(cnst, kc, parent);
 			close();
 			std::string str = getCompletedString();
-			kc.addToKnowledgeBase((PointerAddress)cnst, str);
+			kc->addToKnowledgeBase((PointerAddress)cnst, str);
 		}
 };
 
@@ -253,7 +253,7 @@ class CLIPSConstantVectorBuilder : public CLIPSConstantBuilder {
 			addFields(cnst, kc, parent);
 			close();
 			std::string str = getCompletedString();
-			kc.addToKnowledgeBase((PointerAddress)cnst, str);
+			kc->addToKnowledgeBase((PointerAddress)cnst, str);
 		}
 };
 
@@ -295,7 +295,7 @@ class CLIPSGlobalValueBuilder : public CLIPSConstantBuilder
 			addFields(cnst, kc, parent);
 			close();
 			std::string str = getCompletedString();
-			kc.addToKnowledgeBase((PointerAddress)cnst, str);
+			kc->addToKnowledgeBase((PointerAddress)cnst, str);
 		}
 };
 
@@ -306,14 +306,14 @@ class CLIPSGlobalAliasBuilder : public CLIPSGlobalValueBuilder {
          : CLIPSGlobalValueBuilder(nm, "GlobalAlias", namer) { }
       void addFields(GlobalAlias* addr, KnowledgeConstruction *kc, char* parent) {
          CLIPSGlobalValueBuilder::addFields((GlobalValue*)addr, kc, parent); 
-         addField("Aliasee", kc.route(addr->getAliasee(), getNamer()));
+         addField("Aliasee", kc->route(addr->getAliasee(), getNamer()));
       }
 		void build(GlobalAlias* cnst, KnowledgeConstruction *kc, char* parent) {
 			open();
 			addFields(cnst, kc, parent);
 			close();
 			std::string str = getCompletedString();
-			kc.addToKnowledgeBase((PointerAddress)cnst, str);
+			kc->addToKnowledgeBase((PointerAddress)cnst, str);
 		}
 };
 
@@ -326,7 +326,7 @@ class CLIPSGlobalVariableBuilder : public CLIPSGlobalValueBuilder {
          CLIPSGlobalValueBuilder::addFields((GlobalValue*)addr, kc, parent); 
          if(addr->hasInitializer()) {
             addTrueField("HasInitializer");
-            addField("Initializer", kc.route(addr->getInitializer(), getNamer()));
+            addField("Initializer", kc->route(addr->getInitializer(), getNamer()));
          }
          if(addr->hasDefinitiveInitializer()) addTrueField("HasDefinitiveInitializer");
          if(addr->hasUniqueInitializer()) addTrueField("HasUniqueInitializer");
@@ -338,7 +338,7 @@ class CLIPSGlobalVariableBuilder : public CLIPSGlobalValueBuilder {
 			addFields(cnst, kc, parent);
 			close();
 			std::string str = getCompletedString();
-			kc.addToKnowledgeBase((PointerAddress)cnst, str);
+			kc->addToKnowledgeBase((PointerAddress)cnst, str);
 		}
 };
 
@@ -355,7 +355,7 @@ class CLIPSUndefValueBuilder : public CLIPSConstantBuilder {
 			addFields(cnst, kc, parent);
 			close();
 			std::string str = getCompletedString();
-			kc.addToKnowledgeBase((PointerAddress)cnst, str);
+			kc->addToKnowledgeBase((PointerAddress)cnst, str);
 		}
 };
 
