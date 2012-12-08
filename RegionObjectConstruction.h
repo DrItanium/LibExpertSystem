@@ -29,10 +29,10 @@ class CLIPSRegionBuilder : public CLIPSObjectBuilder {
 				RegionNode* rn = *i;
 				if(!rn->isSubRegion()) {
 					BasicBlock* bb = rn->getEntry(); 
-               appendValue(kc->route(bb, name, namer));
+               appendValue(kc->route(bb, namer, name));
 				} else {
 					Region* subRegion = rn->getNodeAs<Region>();
-               appendValue(kc->route(subRegion, name, namer));
+               appendValue(kc->route(subRegion, namer, name));
 				}
          }
          closeField();
