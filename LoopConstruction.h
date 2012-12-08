@@ -29,13 +29,13 @@ class CLIPSLoopBuilder : public CLIPSObjectBuilder {
          //incorrect nesting of child blocks
          for(Loop::iterator q = loop->begin(), qu = loop->end(); q != qu; ++q) {
             Loop* subLoop = *q;
-            std::string result = kc->route(subLoop, t, n);
+            std::string result = kc.route(subLoop, n, t);
             appendValue(result);
          }
          for(Loop::block_iterator s = loop->block_begin(), e = loop->block_end(); s != e; ++s) {
             BasicBlock* bb = (*s);
             if(!n.pointerRegistered((PointerAddress)bb)) 
-               appendValue(kc->route(bb, t, n));
+               appendValue(kc.route(bb, n, t));
          }
          closeField();
          openField("Exits");
