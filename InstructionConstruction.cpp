@@ -179,6 +179,7 @@ void CLIPSStoreInstructionBuilder::addFields(StoreInst* target, KnowledgeConstru
    }
    closeField();
 }
+make_build_method(StoreInstruction, StoreInst)
 void CLIPSBinaryOperatorBuilder::addFields(BinaryOperator* target, KnowledgeConstruction *kc, char* parent) {
    CLIPSInstructionBuilder::addFields((Instruction*)target, kc, parent);
    if(target->hasNoUnsignedWrap()) addTrueField("HasNoUnsignedWrap");
