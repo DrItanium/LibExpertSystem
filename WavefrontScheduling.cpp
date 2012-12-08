@@ -41,9 +41,9 @@ namespace llvm {
 				EnvironmentConstruction env;
 				kc.route(fn, li, ri);
 				env.batchStar("Init.clp");
+				env.reset();
 				env.makeInstance(nilObject);
 				env.makeInstances((char*)kc.getInstancesAsString().c_str());
-				env.reset();
 				env.run(-1L);
             return true;
          } else {
