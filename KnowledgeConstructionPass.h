@@ -78,6 +78,7 @@ namespace {
 		std::string route(Constant* cnst, FunctionNamer& namer, char* parent);
 		std::string route(Instruction* inst, FunctionNamer& namer, char* parent);
 		std::string route(Type* t, FunctionNamer& namer);
+		std::string route(Operator* op, FunctionNamer& namer); 
 		std::string route(Operator* op, FunctionNamer& namer, char* parent);
 		std::string route(BasicBlock* bb, FunctionNamer& namer, char* parent, bool constructInstructions = true);
 		std::string route(Region* region, FunctionNamer& namer, char* parent);
