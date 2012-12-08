@@ -42,14 +42,12 @@ extern "C" {
 using namespace llvm;
 //char nilObject[41] = "(nil of ConstantPointerNull (Pointer 0))";
 namespace llvm {
-	struct KnowledgeConstruction : public FunctionPass {
-		static char ID;
+	class KnowledgeConstruction {
 		llvm::DenseMap<PointerAddress, std::string>* instances;
 		llvm::raw_string_ostream* instanceStream; 
 
 		public:
-		KnowledgeConstruction() : FunctionPass(ID) {
-			//initializeKnowledgeConstructionPass(*PassRegistry::getPassRegistry());
+		KnowledgeConstruction() {
 			std::string tmp;
 			instances = new llvm::DenseMap<PointerAddress, std::string>();
 			instanceStream = new llvm::raw_string_ostream(tmp);
@@ -63,16 +61,6 @@ namespace llvm {
 		llvm::DenseMap<PointerAddress, std::string>* getInstances() { return instances; }
 		std::string getInstancesAsString() { return instanceStream->str(); }
 
-		virtual void print(raw_ostream &OS, const Module *) const {
-			OS << "Instances:\n";
-			OS << instanceStream->str() << '\n';
-			OS << "End Instances\n";
-		}
-		virtual void getAnalysisUsage(AnalysisUsage &Info) const {
-			Info.addRequired<LoopInfo>();
-			Info.addRequired<RegionInfo>();
-		}
-		//TODO: add the route commands
 		void addToInstanceStream(std::string &instance);
 		void registerInstance(PointerAddress ptrAddress, std::string &instance);
 		void addToKnowledgeBase(PointerAddress ptrAddress, std::string &instance);
@@ -95,24 +83,7 @@ namespace llvm {
 		void route(RegionInfo& ri, FunctionNamer& namer, char* parent);
 		void route(LoopInfo& li, FunctionNamer& namer, char* parent);
 		void updateFunctionContents(Function& fn, FunctionNamer& namer);
-		virtual bool runOnFunction(Function& fn) {
-			char* funcName;
-			//get the function namer object
-			LoopInfo &loops = getAnalysis<LoopInfo>();
-			RegionInfo &regions = getAnalysis<RegionInfo>();
-			FunctionNamer namer;
-			funcName = (char*)fn.getName().data();
-			llvm::errs() << "Current function is " << funcName << "\n";
-			namer.reset();
-			std::string tmp("nil");
-			namer.tryRegisterPointerToName(0L, tmp);
-			instances->clear();
-			updateFunctionContents(fn, namer);
-			route(loops, namer, funcName);
-			route(regions, namer, funcName);
-			//at this point we shall have a set of instance strings
-			return false;
-		}
+		void route(Function& fn, LoopInfo& li, RegionInfo& ri);
 	};
 }
 #endif

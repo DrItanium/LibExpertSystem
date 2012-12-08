@@ -2,12 +2,12 @@
 #include "KnowledgeConstructionEngine.h"
 
 #define BuildUpFullExpression(type, ty, tgt) \
-   type vb (name, ty, namer); \
-   vb.build(tgt, this, parent)
+	type vb (name, ty, namer); \
+vb.build(tgt, this, parent)
 
 #define BuildUpExpression(type, tgt) \
-   type vb (name, namer); \
-   vb.build(tgt, this, parent)
+	type vb (name, namer); \
+vb.build(tgt, this, parent)
 
 #define makeGensym(name)  \
 	char* n = CharBuffer(64); \
@@ -91,213 +91,213 @@ std::string KnowledgeConstruction::route(Constant* cnst, FunctionNamer& namer) {
 	return route(cnst, namer, "nil");
 }
 std::string KnowledgeConstruction::route(Constant* val, FunctionNamer& namer, char* parent) {
-   if(namer.pointerRegistered((PointerAddress)val)) {
-      return namer.nameFromPointer((PointerAddress)val);
-   } else if(isa<Function>(val)) {
-         return val->getName().str();
-   } else {
-      std::string q;
-      raw_string_ostream tmp(q);
-      if(!val->hasName()) {
-         namer.makeGensymID(tmp); 
-      } else {
-         tmp << val->getName();
-      }
-      std::string name = tmp.str();
-      if(simple_dyn_cast(UndefValue, val)) {
-         BuildUpExpression(CLIPSUndefValueBuilder, op);
-         return name;
-      } else if(simple_dyn_cast(BlockAddress, val)) {
-         BuildUpExpression(CLIPSBlockAddressBuilder, op);
-         return name;
-      } else if(simple_dyn_cast(ConstantAggregateZero, val)) {
-         BuildUpExpression(CLIPSConstantAggregateZeroBuilder, op);
-         return name;
-      } else if(simple_dyn_cast(ConstantArray, val)) {
-         BuildUpExpression(CLIPSConstantArrayBuilder, op);
-         return name;
-      } else if(simple_dyn_cast(ConstantExpr, val)) {
-         BuildUpExpression(CLIPSConstantExpressionBuilder, op);
-         return name;
-      } else if(simple_dyn_cast(ConstantFP, val)) {
-         BuildUpExpression(CLIPSConstantFloatingPointBuilder, op);
-         return name;
-      } else if(simple_dyn_cast(ConstantInt, val)) {
-         BuildUpExpression(CLIPSConstantIntegerBuilder, op);
-         return name;
-      } else if(simple_dyn_cast(ConstantPointerNull, val)) {
-         BuildUpExpression(CLIPSConstantPointerNullBuilder, op);
-         return name;
-      } else if(simple_dyn_cast(ConstantStruct, val)) {
-         ConstantStruct* cs = (ConstantStruct*)val;
-         std::string name((char*)cs->getName().data());
-         BuildUpExpression(CLIPSConstantStructBuilder, op);
-         return name;
-      } else if(simple_dyn_cast(ConstantVector, val)) {
-         BuildUpExpression(CLIPSConstantVectorBuilder, op);
-         return name;
-      } else if(simple_dyn_cast(GlobalValue, val)) {
-         if(nested_dyn_cast(GlobalAlias, gaop, op)) {
-            BuildUpExpression(CLIPSGlobalAliasBuilder, gaop);
-            return name;
-         } else if(nested_dyn_cast(GlobalVariable, gvop, op)) {
-            BuildUpExpression(CLIPSGlobalVariableBuilder, gvop);
-            return name;
-         } else {
-            BuildUpFullExpression(CLIPSGlobalValueBuilder, "GlobalValue", op);
-            return name;
-         }
-      } else {
-         BuildUpFullExpression(CLIPSConstantBuilder, "Constant", val);
-         return name;
-      }
-   }
+	if(namer.pointerRegistered((PointerAddress)val)) {
+		return namer.nameFromPointer((PointerAddress)val);
+	} else if(isa<Function>(val)) {
+		return val->getName().str();
+	} else {
+		std::string q;
+		raw_string_ostream tmp(q);
+		if(!val->hasName()) {
+			namer.makeGensymID(tmp); 
+		} else {
+			tmp << val->getName();
+		}
+		std::string name = tmp.str();
+		if(simple_dyn_cast(UndefValue, val)) {
+			BuildUpExpression(CLIPSUndefValueBuilder, op);
+			return name;
+		} else if(simple_dyn_cast(BlockAddress, val)) {
+			BuildUpExpression(CLIPSBlockAddressBuilder, op);
+			return name;
+		} else if(simple_dyn_cast(ConstantAggregateZero, val)) {
+			BuildUpExpression(CLIPSConstantAggregateZeroBuilder, op);
+			return name;
+		} else if(simple_dyn_cast(ConstantArray, val)) {
+			BuildUpExpression(CLIPSConstantArrayBuilder, op);
+			return name;
+		} else if(simple_dyn_cast(ConstantExpr, val)) {
+			BuildUpExpression(CLIPSConstantExpressionBuilder, op);
+			return name;
+		} else if(simple_dyn_cast(ConstantFP, val)) {
+			BuildUpExpression(CLIPSConstantFloatingPointBuilder, op);
+			return name;
+		} else if(simple_dyn_cast(ConstantInt, val)) {
+			BuildUpExpression(CLIPSConstantIntegerBuilder, op);
+			return name;
+		} else if(simple_dyn_cast(ConstantPointerNull, val)) {
+			BuildUpExpression(CLIPSConstantPointerNullBuilder, op);
+			return name;
+		} else if(simple_dyn_cast(ConstantStruct, val)) {
+			ConstantStruct* cs = (ConstantStruct*)val;
+			std::string name((char*)cs->getName().data());
+			BuildUpExpression(CLIPSConstantStructBuilder, op);
+			return name;
+		} else if(simple_dyn_cast(ConstantVector, val)) {
+			BuildUpExpression(CLIPSConstantVectorBuilder, op);
+			return name;
+		} else if(simple_dyn_cast(GlobalValue, val)) {
+			if(nested_dyn_cast(GlobalAlias, gaop, op)) {
+				BuildUpExpression(CLIPSGlobalAliasBuilder, gaop);
+				return name;
+			} else if(nested_dyn_cast(GlobalVariable, gvop, op)) {
+				BuildUpExpression(CLIPSGlobalVariableBuilder, gvop);
+				return name;
+			} else {
+				BuildUpFullExpression(CLIPSGlobalValueBuilder, "GlobalValue", op);
+				return name;
+			}
+		} else {
+			BuildUpFullExpression(CLIPSConstantBuilder, "Constant", val);
+			return name;
+		}
+	}
 }
 std::string KnowledgeConstruction::route(Instruction* val, FunctionNamer& namer, char* parent) {
-   if(namer.pointerRegistered((PointerAddress)val)) {
-      return namer.nameFromPointer((PointerAddress)val);
-   } else {
-      //set the name if it doesn't have one and should
-      if(!val->getType()->isVoidTy() && !val->hasName()) {
-         char* buf = CharBuffer(128);
-         namer.makeRegisterID(buf);
-         val->setName(Twine(buf));
-         free(buf);
-      }
-      std::string tmp;
-      raw_string_ostream builder (tmp);
-      if(!val->getType()->isVoidTy()) {
-         builder << val->getName();
-      } else {
-         char* buf = CharBuffer(64);
-         namer.makeGensymID(buf);
-         builder << buf;	
-         free(buf);
-      }
-      std::string name (builder.str());
-      if(PHINode* op = dyn_cast<PHINode>(val)) {
-         BuildUpExpression(CLIPSPHINodeBuilder, op);
-         return name;
-      } else if(StoreInst* op = dyn_cast<StoreInst>(val)) {
-         BuildUpExpression(CLIPSStoreInstructionBuilder, op);
-         return name;
-      } else if(BinaryOperator* op = dyn_cast<BinaryOperator>(val)) {
-         BuildUpExpression(CLIPSBinaryOperatorBuilder, op);
-         return name;
-      } else if(CallInst* op = dyn_cast<CallInst>(val)) {
-         BuildUpExpression(CLIPSCallInstructionBuilder, op);
-         return name;
-      } else if(CmpInst* op = dyn_cast<CmpInst>(val)) {
-         if(FCmpInst* fop = dyn_cast<FCmpInst>(op)) {
-            BuildUpExpression(CLIPSFPCompareInstructionBuilder, fop);
-            return name;
-         } else if(ICmpInst* iop = dyn_cast<ICmpInst>(op)) {
-            BuildUpExpression(CLIPSIntCompareInstructionBuilder, iop);
-            return name;
-         } else {
-            BuildUpExpression(CLIPSCompareInstructionBuilder, op);
-            return name;
-         }
-      } else if(GetElementPtrInst* op = dyn_cast<GetElementPtrInst>(val)) {
-         BuildUpExpression(CLIPSGetElementPtrInstructionBuilder, op);
-         return name;
-      } else if(LoadInst* op = dyn_cast<LoadInst>(val)) {
-         BuildUpExpression(CLIPSLoadInstructionBuilder, op);
-         return name;
-      } else if(TerminatorInst* op = dyn_cast<TerminatorInst>(val)) {
-         if(BranchInst* bop = dyn_cast<BranchInst>(op)) {
-            BuildUpExpression(CLIPSBranchInstructionBuilder, bop);
-            return name;
-         } else if(IndirectBrInst* ibop = dyn_cast<IndirectBrInst>(op)) {
-            BuildUpExpression(CLIPSIndirectBranchInstructionBuilder, ibop);
-            return name;
-         } else if(InvokeInst* iiop = dyn_cast<InvokeInst>(op)) {
-            BuildUpExpression(CLIPSInvokeInstructionBuilder, iiop);
-            return name;
-         } else if(ResumeInst* rop = dyn_cast<ResumeInst>(op)) {
-            BuildUpExpression(CLIPSResumeInstructionBuilder, rop);
-            return name;
-         } else if(nested_dyn_cast(ReturnInst, riop, op)) {
-            BuildUpExpression(CLIPSReturnInstructionBuilder, riop);
-            return name;
-         } else if(nested_dyn_cast(SwitchInst, swop, op)) {
-            BuildUpExpression(CLIPSSwitchInstructionBuilder, swop);
-            return name;
-         } else if(nested_dyn_cast(UnreachableInst, uwop, op)) {
-            BuildUpExpression(CLIPSUnreachableInstructionBuilder, uwop);
-            return name;
-         } else {
-            BuildUpFullExpression(CLIPSTerminatorInstructionBuilder, "TerminatorInstruction", op);
-            return name;
-         }
-      } else if(simple_dyn_cast(SelectInst, val)) {
-         BuildUpExpression(CLIPSSelectInstructionBuilder, op);
-         return name;
-      } else if(simple_dyn_cast(UnaryInstruction, val)) {
-         if(nested_dyn_cast(AllocaInst, aop, op)) {
-            BuildUpExpression(CLIPSAllocaInstructionBuilder, aop);
-            return name;
-         } else if(nested_dyn_cast(CastInst, cop, op)) {
-            BuildUpExpression(CLIPSCastInstructionBuilder, cop);
-            return name;
-         } else if(nested_dyn_cast(ExtractValueInst,eop, op)) {
-            BuildUpExpression(CLIPSExtractValueInstructionBuilder, eop);
-            return name;
-         } else if(nested_dyn_cast(VAArgInst, vop, op)) {
-            BuildUpExpression(CLIPSVAArgInstructionBuilder, vop);
-            return name;
-         } else {
-            BuildUpFullExpression(CLIPSUnaryInstructionBuilder, "UnaryInstruction", op);
-            return name;
-         }
-      } else {
-         BuildUpFullExpression(CLIPSInstructionBuilder, "Instruction", val);
-         return name;
-      }
-   }
+	if(namer.pointerRegistered((PointerAddress)val)) {
+		return namer.nameFromPointer((PointerAddress)val);
+	} else {
+		//set the name if it doesn't have one and should
+		if(!val->getType()->isVoidTy() && !val->hasName()) {
+			char* buf = CharBuffer(128);
+			namer.makeRegisterID(buf);
+			val->setName(Twine(buf));
+			free(buf);
+		}
+		std::string tmp;
+		raw_string_ostream builder (tmp);
+		if(!val->getType()->isVoidTy()) {
+			builder << val->getName();
+		} else {
+			char* buf = CharBuffer(64);
+			namer.makeGensymID(buf);
+			builder << buf;	
+			free(buf);
+		}
+		std::string name (builder.str());
+		if(PHINode* op = dyn_cast<PHINode>(val)) {
+			BuildUpExpression(CLIPSPHINodeBuilder, op);
+			return name;
+		} else if(StoreInst* op = dyn_cast<StoreInst>(val)) {
+			BuildUpExpression(CLIPSStoreInstructionBuilder, op);
+			return name;
+		} else if(BinaryOperator* op = dyn_cast<BinaryOperator>(val)) {
+			BuildUpExpression(CLIPSBinaryOperatorBuilder, op);
+			return name;
+		} else if(CallInst* op = dyn_cast<CallInst>(val)) {
+			BuildUpExpression(CLIPSCallInstructionBuilder, op);
+			return name;
+		} else if(CmpInst* op = dyn_cast<CmpInst>(val)) {
+			if(FCmpInst* fop = dyn_cast<FCmpInst>(op)) {
+				BuildUpExpression(CLIPSFPCompareInstructionBuilder, fop);
+				return name;
+			} else if(ICmpInst* iop = dyn_cast<ICmpInst>(op)) {
+				BuildUpExpression(CLIPSIntCompareInstructionBuilder, iop);
+				return name;
+			} else {
+				BuildUpExpression(CLIPSCompareInstructionBuilder, op);
+				return name;
+			}
+		} else if(GetElementPtrInst* op = dyn_cast<GetElementPtrInst>(val)) {
+			BuildUpExpression(CLIPSGetElementPtrInstructionBuilder, op);
+			return name;
+		} else if(LoadInst* op = dyn_cast<LoadInst>(val)) {
+			BuildUpExpression(CLIPSLoadInstructionBuilder, op);
+			return name;
+		} else if(TerminatorInst* op = dyn_cast<TerminatorInst>(val)) {
+			if(BranchInst* bop = dyn_cast<BranchInst>(op)) {
+				BuildUpExpression(CLIPSBranchInstructionBuilder, bop);
+				return name;
+			} else if(IndirectBrInst* ibop = dyn_cast<IndirectBrInst>(op)) {
+				BuildUpExpression(CLIPSIndirectBranchInstructionBuilder, ibop);
+				return name;
+			} else if(InvokeInst* iiop = dyn_cast<InvokeInst>(op)) {
+				BuildUpExpression(CLIPSInvokeInstructionBuilder, iiop);
+				return name;
+			} else if(ResumeInst* rop = dyn_cast<ResumeInst>(op)) {
+				BuildUpExpression(CLIPSResumeInstructionBuilder, rop);
+				return name;
+			} else if(nested_dyn_cast(ReturnInst, riop, op)) {
+				BuildUpExpression(CLIPSReturnInstructionBuilder, riop);
+				return name;
+			} else if(nested_dyn_cast(SwitchInst, swop, op)) {
+				BuildUpExpression(CLIPSSwitchInstructionBuilder, swop);
+				return name;
+			} else if(nested_dyn_cast(UnreachableInst, uwop, op)) {
+				BuildUpExpression(CLIPSUnreachableInstructionBuilder, uwop);
+				return name;
+			} else {
+				BuildUpFullExpression(CLIPSTerminatorInstructionBuilder, "TerminatorInstruction", op);
+				return name;
+			}
+		} else if(simple_dyn_cast(SelectInst, val)) {
+			BuildUpExpression(CLIPSSelectInstructionBuilder, op);
+			return name;
+		} else if(simple_dyn_cast(UnaryInstruction, val)) {
+			if(nested_dyn_cast(AllocaInst, aop, op)) {
+				BuildUpExpression(CLIPSAllocaInstructionBuilder, aop);
+				return name;
+			} else if(nested_dyn_cast(CastInst, cop, op)) {
+				BuildUpExpression(CLIPSCastInstructionBuilder, cop);
+				return name;
+			} else if(nested_dyn_cast(ExtractValueInst,eop, op)) {
+				BuildUpExpression(CLIPSExtractValueInstructionBuilder, eop);
+				return name;
+			} else if(nested_dyn_cast(VAArgInst, vop, op)) {
+				BuildUpExpression(CLIPSVAArgInstructionBuilder, vop);
+				return name;
+			} else {
+				BuildUpFullExpression(CLIPSUnaryInstructionBuilder, "UnaryInstruction", op);
+				return name;
+			}
+		} else {
+			BuildUpFullExpression(CLIPSInstructionBuilder, "Instruction", val);
+			return name;
+		}
+	}
 }
 std::string KnowledgeConstruction::route(Type* t, FunctionNamer& namer) {
-   if(namer.pointerRegistered((PointerAddress)t)) {
-      return namer.nameFromPointer((PointerAddress)t);
-   } else {
-      char* n = CharBuffer(64);
-      namer.makeGensymID(n);
-      std::string id(n);
-      free(n);
-      if(FunctionType* ft = dyn_cast<FunctionType>(t)) {
-         CLIPSFunctionTypeBuilder a(id, namer);
+	if(namer.pointerRegistered((PointerAddress)t)) {
+		return namer.nameFromPointer((PointerAddress)t);
+	} else {
+		char* n = CharBuffer(64);
+		namer.makeGensymID(n);
+		std::string id(n);
+		free(n);
+		if(FunctionType* ft = dyn_cast<FunctionType>(t)) {
+			CLIPSFunctionTypeBuilder a(id, namer);
 			a.build(ft, this);
-      } else if(IntegerType* it = dyn_cast<IntegerType>(t)) {
-         CLIPSIntegerTypeBuilder b(id, namer);
+		} else if(IntegerType* it = dyn_cast<IntegerType>(t)) {
+			CLIPSIntegerTypeBuilder b(id, namer);
 			b.build(it, this);
-      } else if(CompositeType* ct = dyn_cast<CompositeType>(t)) {
-         if(StructType* st = dyn_cast<StructType>(ct)) {
-            CLIPSStructTypeBuilder c(id, namer);
+		} else if(CompositeType* ct = dyn_cast<CompositeType>(t)) {
+			if(StructType* st = dyn_cast<StructType>(ct)) {
+				CLIPSStructTypeBuilder c(id, namer);
 				c.build(st, this, "nil");
-         } else if(SequentialType* qt = dyn_cast<SequentialType>(ct)) {
-            if(ArrayType* at = dyn_cast<ArrayType>(qt)) {
-               CLIPSArrayTypeBuilder d(id, namer);
+			} else if(SequentialType* qt = dyn_cast<SequentialType>(ct)) {
+				if(ArrayType* at = dyn_cast<ArrayType>(qt)) {
+					CLIPSArrayTypeBuilder d(id, namer);
 					d.build(at, this);
-            } else if(PointerType* pt = dyn_cast<PointerType>(qt)) {
-               CLIPSPointerTypeBuilder e(id, namer);
+				} else if(PointerType* pt = dyn_cast<PointerType>(qt)) {
+					CLIPSPointerTypeBuilder e(id, namer);
 					e.build(pt, this);
-            } else if(VectorType* vt = dyn_cast<VectorType>(qt)) {
-               CLIPSVectorTypeBuilder f(id, namer);
+				} else if(VectorType* vt = dyn_cast<VectorType>(qt)) {
+					CLIPSVectorTypeBuilder f(id, namer);
 					f.build(vt, this);
-            } else {
-               CLIPSSequentialTypeBuilder typ(id, namer);
+				} else {
+					CLIPSSequentialTypeBuilder typ(id, namer);
 					typ.build(qt, this);
-            }
-         } else {
-            CLIPSCompositeTypeBuilder typ(id, namer);
+				}
+			} else {
+				CLIPSCompositeTypeBuilder typ(id, namer);
 				typ.build(ct, this);
-         }
-      } else {
-         CLIPSTypeBuilder typ(id, namer);
+			}
+		} else {
+			CLIPSTypeBuilder typ(id, namer);
 			typ.build(t, this);
-      }
-      return id;
-   }
+		}
+		return id;
+	}
 
 }
 std::string KnowledgeConstruction::route(Operator* val, FunctionNamer& namer) {
@@ -499,14 +499,20 @@ void KnowledgeConstruction::updateFunctionContents(Function& fn, FunctionNamer& 
 		route(a, namer, fnName);
 	}
 }
+void route(Function& fn, LoopInfo& li, RegionInfo& ri) {
+	char* funcName;
+	//get the function namer object
+	FunctionNamer namer;
+	funcName = (char*)fn.getName().data();
+	namer.reset();
+	std::string tmp("nil");
+	namer.tryRegisterPointerToName(0L, tmp);
+	instances->clear();
+	updateFunctionContents(fn, namer);
+	route(li, namer, funcName);
+	route(ri, namer, funcName);
+}
 
-char KnowledgeConstruction::ID = 0;
-//for opt
-static RegisterPass<KnowledgeConstruction> kc("knowledge", "Knowledge constructor", false, true);
-INITIALIZE_PASS_BEGIN(KnowledgeConstruction, "knowledge", "Knowledge constructor", false, true)
-INITIALIZE_PASS_DEPENDENCY(LoopInfo)
-INITIALIZE_PASS_DEPENDENCY(RegionInfo)
-INITIALIZE_PASS_END(KnowledgeConstruction, "knowledge", "Knowledge constructor", false, true)
 #undef nested_dyn_cast
 #undef simple_dyn_cast
 #undef BuildUpFullExpression
