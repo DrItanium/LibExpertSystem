@@ -16,7 +16,7 @@ class CLIPSArgumentBuilder : public CLIPSValueBuilder {
 		  open();
 		  addFields(arg, kc, parent);
 		  close();
-		  std::string &str = getCompletedString();
+		  std::string str = getCompletedString();
 		  kc->addToKnowledgeBase((PointerAddress)arg, str);
 	  }
 };
