@@ -50,11 +50,9 @@ namespace llvm {
 		public:
 		KnowledgeConstruction() : FunctionPass(ID) {
 			//initializeKnowledgeConstructionPass(*PassRegistry::getPassRegistry());
-			llvm::errs() << "Initialized KnowledgeConstruction\n";
 			std::string tmp;
 			instances = new llvm::DenseMap<PointerAddress, std::string>();
 			instanceStream = new llvm::raw_string_ostream(tmp);
-			llvm::errs() << "Finished Initializing KnowledgeConstruction\n";
 		}
 		~KnowledgeConstruction();
 
@@ -72,7 +70,7 @@ namespace llvm {
 		virtual void getAnalysisUsage(AnalysisUsage &Info) const {
 			Info.addRequired<LoopInfo>();
 			Info.addRequired<RegionInfo>();
-			Info.addRequiredTransitive<FunctionNamer>();
+			Info.addRequired<FunctionNamer>();
 			//we don't need the environment yet and it's actually smarter to just
 			//wait until the custom pass so that the programmer has complete
 			//control over the code
@@ -101,7 +99,6 @@ namespace llvm {
 		void route(LoopInfo& li, FunctionNamer& namer, char* parent);
 		void updateFunctionContents(Function& fn, FunctionNamer& namer);
 		virtual bool runOnFunction(Function& fn) {
-			llvm::errs() << "Called runOnFunction of KnowledgeConstruction\n";
 			char* funcName;
 			//get the function namer object
 			LoopInfo &loops = getAnalysis<LoopInfo>();
