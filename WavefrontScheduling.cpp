@@ -20,7 +20,7 @@ extern "C" {
 
 using namespace llvm;
 char nilObject[41] = "(nil of ConstantPointerNull (Pointer 0))";
-namespace {
+namespace llvm {
    struct WavefrontScheduling : public FunctionPass {
       static char ID;
       public:
@@ -29,6 +29,7 @@ namespace {
       virtual void getAnalysisUsage(AnalysisUsage &Info) const {
 			Info.addRequired<KnowledgeConstruction>();
 			Info.addRequired<EnvironmentConstruction>();
+			Info.addRequired<JSEdgeRemoval>();
       }
       virtual bool runOnFunction(Function& fn) {
          //do not actually wavefront schedule if we only have one block
@@ -48,8 +49,6 @@ namespace {
    };
 }
 char WavefrontScheduling::ID = 0;
-INITIALIZE_PASS_BEGIN(WavefrontScheduling, "wavefront", "Wavefront Scheduling", false, false)
-INITIALIZE_PASS_DEPENDENCY(JSEdgeRemoval)
-INITIALIZE_PASS_END(WavefrontScheduling, "wavefront", "Wavefront Scheduling", false, false)
 //for opt
-static RegisterPass<WavefrontScheduling> X("wavefront", "Wavefront Scheduling", false, false);
+static RegisterPass<WavefrontScheduling> wave("wavefront", "Wavefront Scheduling", false, false);
+INITIALIZE_PASS(WavefrontScheduling, "wavefront", "Wavefront Scheduling", false, false)
