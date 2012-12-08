@@ -4,7 +4,7 @@
 class CLIPSTypeBuilder : public CLIPSObjectBuilder {
 	public:
 		CLIPSTypeBuilder(std::string nm, FunctionNamer& namer, std::string ty = "LLVMType") : CLIPSObjectBuilder(nm, ty, namer) { }
-		void addFields(Type* type) {
+		void addFields(Type* type, KnowledgeConstruction* kc) {
          FunctionNamer& namer = getNamer();
 			PointerAddress pointer = (PointerAddress)type;
 			if(!namer.pointerRegistered(pointer)) {
@@ -53,10 +53,17 @@ class CLIPSTypeBuilder : public CLIPSObjectBuilder {
 				for(Type::subtype_iterator i = type->subtype_begin(),
 						e = type->subtype_end(); i != e; ++i) {
 					Type* t = (*i);
-					appendValue(Route(t, namer));
+					appendValue(kc->route(t, namer));
 				}
 				closeField();
 			}
+		}
+		void build(Type* st, KnowledgeConstruction* kc) {
+			open();
+			addFields(st, kc);
+			close();
+			std::string str = getCompletedString();
+			kc->addToKnowledgeBase((PointerAddress)st, str);
 		}
 };
 class CLIPSFunctionTypeBuilder : public CLIPSTypeBuilder {
@@ -89,11 +96,18 @@ class CLIPSVectorTypeBuilder : public CLIPSSequentialTypeBuilder {
 class CLIPSStructTypeBuilder : public CLIPSCompositeTypeBuilder {
 	public:
 		CLIPSStructTypeBuilder(std::string nm, FunctionNamer& namer, std::string ty = "StructType") : CLIPSCompositeTypeBuilder(nm, namer, ty) { }
-		void addFields(StructType* st, char* parent) 
+		void addFields(StructType* st, KnowledgeConstruction* kc, char* parent) 
 		{
-			CLIPSTypeBuilder::addFields(st);
+			CLIPSTypeBuilder::addFields(st, kc);
 			setParent(parent);
 			addField("Name", st->getName());
+		}
+		void build(StructType* st, KnowledgeConstruction* kc, char* parent) {
+			open();
+			addFields(st, kc, parent);
+			close();
+			std::string str = getCompletedString();
+			kc->addToKnowledgeBase((PointerAddress)st, str);
 		}
 };
 
