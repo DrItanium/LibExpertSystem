@@ -43,13 +43,13 @@ using namespace llvm;
 //char nilObject[41] = "(nil of ConstantPointerNull (Pointer 0))";
 namespace llvm {
 	class KnowledgeConstruction {
-		llvm::DenseMap<PointerAddress, std::string>* instances;
+		//llvm::DenseMap<PointerAddress, std::string>* instances;
 		llvm::raw_string_ostream* instanceStream; 
 		std::string* tmp;
 		public:
 		KnowledgeConstruction() {
 			tmp = new std::string();
-			instances = new llvm::DenseMap<PointerAddress, std::string>();
+			//instances = new llvm::DenseMap<PointerAddress, std::string>();
 			instanceStream = new llvm::raw_string_ostream(*tmp);
 		}
 		~KnowledgeConstruction();
@@ -58,11 +58,11 @@ namespace llvm {
 			instanceStream->flush();
 		}
 
-		llvm::DenseMap<PointerAddress, std::string>* getInstances() { return instances; }
+		//llvm::DenseMap<PointerAddress, std::string>* getInstances() { return instances; }
 		std::string getInstancesAsString() { return instanceStream->str(); }
 
 		void addToInstanceStream(std::string &instance);
-		void registerInstance(PointerAddress ptrAddress, std::string &instance);
+		//void registerInstance(PointerAddress ptrAddress, std::string &instance);
 		void addToKnowledgeBase(PointerAddress ptrAddress, std::string &instance);
 		std::string route(Value* val, FunctionNamer& namer, char* parent);
 		std::string route(Value* val, FunctionNamer& namer);

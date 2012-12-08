@@ -18,20 +18,20 @@ free(n)
 #define nested_dyn_cast(Type, name, in) Type * name = dyn_cast<Type>(in)
 #define simple_dyn_cast(Type, in) nested_dyn_cast(Type, op, in)
 KnowledgeConstruction::~KnowledgeConstruction() {
-	delete instances;
+//	delete instances;
 	delete instanceStream;
 	delete tmp;
 }
 void KnowledgeConstruction::addToInstanceStream(std::string &instance) {
 	(*instanceStream) << instance << " ";
 }
-void KnowledgeConstruction::registerInstance(PointerAddress ptrAdr, std::string &instance) {
-	std::pair<PointerAddress, std::string&> pair (ptrAdr, instance);
-	instances->insert(pair);
-}
+//void KnowledgeConstruction::registerInstance(PointerAddress ptrAdr, std::string &instance) {
+//	std::pair<PointerAddress, std::string&> pair (ptrAdr, instance);
+//	instances->insert(pair);
+//}
 void KnowledgeConstruction::addToKnowledgeBase(PointerAddress ptrAddress, std::string &instance) {
 	addToInstanceStream(instance);
-	registerInstance(ptrAddress, instance);
+	//registerInstance(ptrAddress, instance);
 }
 std::string KnowledgeConstruction::route(Value* val, FunctionNamer& namer, char* parent) {
 	if(namer.pointerRegistered((PointerAddress)val)) {
@@ -505,10 +505,10 @@ void KnowledgeConstruction::route(Function& fn, LoopInfo& li, RegionInfo& ri) {
 	//get the function namer object
 	FunctionNamer namer;
 	funcName = (char*)fn.getName().data();
-	namer.reset();
+	//namer.reset();
 	std::string tmp("nil");
 	namer.tryRegisterPointerToName(0L, tmp);
-	instances->clear();
+	//instances->clear();
 	updateFunctionContents(fn, namer);
 	route(li, namer, funcName);
 	route(ri, namer, funcName);
