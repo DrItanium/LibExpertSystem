@@ -28,6 +28,7 @@
 #include "llvm/Function.h"
 #include "llvm/Analysis/LoopInfo.h"
 #include "FunctionNamer.h"
+#include "KnowledgeConstructionPass.h"
 extern "C" {
 #include "clips.h"
 }
@@ -92,19 +93,21 @@ class CLIPSObjectBuilder {
       void open();
       void close();
       void convertToKnowledge(void* theEnv);
-      void addFields(PointerAddress pointer, char* parent);
+      void addFields(PointerAddress pointer, KnowledgeConstruction &kc, char* parent);
 };
 
 class CLIPSValueBuilder : public CLIPSObjectBuilder {
    public:
       CLIPSValueBuilder(std::string nm, std::string ty, FunctionNamer& namer);
-      void setType(Type* t);
-      void addFields(Value* val, char* parent);
+      void setType(KnowledgeConstruction &kc, Type* t);
+      void addFields(Value* val, KnowlegeConstruction &kc, char* parent);
+		void build(Value* val, KnowlegeConstruction &kc, char* parent);
 };
 class CLIPSUserBuilder : public CLIPSValueBuilder {
    public:
       CLIPSUserBuilder(std::string nm, std::string ty, FunctionNamer& namer);
-      void addFields(User* user, char* parent);
+      void addFields(User* user, KnowledgeConstruction &kc, char* parent);
+		void build(User* user, KnowledgeConstruction &kc, char* parent);
 };
 //Thank you DOSBOX for this little tidbit :D
 #endif
