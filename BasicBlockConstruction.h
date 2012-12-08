@@ -5,7 +5,7 @@
 class CLIPSBasicBlockBuilder : public CLIPSValueBuilder {
    public:
       CLIPSBasicBlockBuilder(std::string nm, FunctionNamer& namer) : CLIPSValueBuilder(nm, "BasicBlock", namer) { }
-      void addFields(BasicBlock* bb, KnowledgeConstruction &kc, char* parent, bool constructInstructions = true) {
+      void addFields(BasicBlock* bb, KnowledgeConstruction *kc, char* parent, bool constructInstructions = true) {
          CLIPSValueBuilder::addFields((Value*)bb, kc, parent);
          char* name = (char*)bb->getName().data();
          FunctionNamer& namer = getNamer();
@@ -36,7 +36,7 @@ class CLIPSBasicBlockBuilder : public CLIPSValueBuilder {
             openField("Contents");
             for(BasicBlock::iterator i = bb->begin(), e = bb->end(); i != e; ++i) {
                Instruction* inst = i;
-               std::string res = kc.route(inst, namer, name);
+               std::string res = kc->route(inst, namer, name);
                appendValue(res);
                data << " " << res;
             }
@@ -44,12 +44,12 @@ class CLIPSBasicBlockBuilder : public CLIPSValueBuilder {
             addField("Produces", data.str()); 
          }
       }
-		void build(BasicBlock* bb, KnowledgeConstruction &kc, char* parent) {
+		void build(BasicBlock* bb, KnowledgeConstruction *kc, char* parent) {
 			open();
 			addFields(bb, kc, parent, true);
 			close();
-			std::string &str = getCompletedString();
-			kc.addToKnowledgeBase((PointerAddress)bb, str);
+			std::string str = getCompletedString();
+			kc->addToKnowledgeBase((PointerAddress)bb, str);
 		}
 };
 #endif
