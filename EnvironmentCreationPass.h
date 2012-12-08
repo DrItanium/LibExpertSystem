@@ -14,11 +14,11 @@ extern "C" {
 using namespace llvm;
 namespace llvm {
 	typedef long long ExecutionDuration;
-	struct EnvironmentConstruction : public FunctionPass {
-		static char ID;
+	class EnvironmentConstruction {
+		private:
 		void* environment;
 		public:
-		EnvironmentConstruction() : FunctionPass(ID) {
+		EnvironmentConstruction() {
 			environment = CreateEnvironment();
 		}
 		~EnvironmentConstruction() {
@@ -36,10 +36,6 @@ namespace llvm {
 		bool makeInstances(char* str);
 		bool makeInstance(char* str);
 		void batchStar(char* str);
-		virtual bool runOnFunction(Function& fn) {
-			clear();
-			return false;
-		}
 	};
 }
 #endif
