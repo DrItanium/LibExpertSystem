@@ -88,15 +88,22 @@ std::string KnowledgeConstruction::route(Argument* arg, FunctionNamer& namer, ch
 		std::string name(gensymBuffer);
 		free(gensymBuffer);
 		CLIPSArgumentBuilder ab(name, namer);
-		ab.open();
-		ab.addFields(name, parent);
-		ab.clone();
-		std::string &str = ab.getCompletedString();
-		addToKnowledgeBase((PointerAddress)arg, str);
+		ab.build(arg, kc, parent);
 		return name;
 	}
 }
 std::string KnowledgeConstruction::route(Loop* loop, FunctionNamer& namer, char* parent) {
+   if(namer.pointerRegistered((PointerAddress)loop)) {
+      return namer.nameFromPointer((PointerAddress)loop);
+   } else {
+      char* buf = CharBuffer(128);
+      namer.makeLoopID(buf);
+      std::string name(buf);
+      free(buf);
+      CLIPSLoopBuilder l(name, namer);
+		l.build(loop, this, parent);
+      return name;
+   }
 
 }
 std::string KnowledgeConstruction::route(MDString* mds, FunctionNamer& namer, char* parent) {
