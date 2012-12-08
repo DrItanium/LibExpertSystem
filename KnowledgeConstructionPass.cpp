@@ -1,9 +1,20 @@
 #include "KnowledgeConstructionPass.h"
 KnowledgeConstruction::~KnowledgeConstruction() {
 	delete instances;
+	delete instanceStream;
 }
-
-std::string route(Value* val, FunctionNamer& namer, char* parent) {
+void KnowledgeConstruction::addToInstanceStream(std::string &instance) {
+	(*instanceStream) << instance << " ";
+}
+void KnowledgeConstruction::registerInstance(PointerAddress ptrAdr, std::string &instance) {
+	std::pair<PointerAddress, std::string&> pair (ptrAdr, instance);
+	instances->insert(pair);
+}
+void KnowledgeConstruction::addToKnowledgeBase(PointerAddress ptrAddress, std::string &instance) {
+	addToInstanceStream(instance);
+	registerInstance(ptrAddress, instance);
+}
+std::string KnowledgeConstruction::route(Value* val, FunctionNamer& namer, char* parent) {
 	if(namer.pointerRegistered((PointerAddress)val)) {
 		return namer.nameFromPointer((PointerAddress)val);
 	} else {
@@ -29,10 +40,10 @@ std::string route(Value* val, FunctionNamer& namer, char* parent) {
          vb.open();
          vb.addFields(val, parent);
          vb.close();
-			registerInstance((PointerAddress)val, vb.getCompletedString());
+			std::string& str = vb.getCompletedString();
+			addToKnowledgeBase((PointerAddress)val, str);
          return name;
 		}
-
 	}
 }
 
