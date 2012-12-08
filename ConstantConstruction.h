@@ -115,7 +115,7 @@ class CLIPSConstantExpressionBuilder : public CLIPSConstantBuilder {
         //    
         // }
       }
-		void build(ConstantExpr* cnst, KnowledgeConstruction &kc, char* parent) {
+		void build(ConstantExpr* cnst, KnowledgeConstruction *kc, char* parent) {
 			open();
 			addFields(cnst, kc, parent);
 			close();
@@ -160,7 +160,7 @@ class CLIPSConstantExpressionBuilder : public CLIPSConstantBuilder {
 class CLIPSConstantFloatingPointBuilder : public CLIPSConstantBuilder {
    public:
       CLIPSConstantFloatingPointBuilder(std::string nm, FunctionNamer& namer) : CLIPSConstantBuilder(nm, "ConstantFloatingPoint", namer) { }
-      void addFields(ConstantFP* addr, KnowledgeConstruction &kc, char* parent) {
+      void addFields(ConstantFP* addr, KnowledgeConstruction* kc, char* parent) {
          CLIPSConstantBuilder::addFields((Constant*)addr, kc, parent); 
          if(addr->isZero()) {
             addTrueField("IsZero");
@@ -173,7 +173,7 @@ class CLIPSConstantFloatingPointBuilder : public CLIPSConstantBuilder {
          //While the APF is arbitrary precision it's not that big of a deal to 
          //lose precision for my purposes
       }
-		void build(ConstantFP* cnst, KnowledgeConstruction &kc, char* parent) {
+		void build(ConstantFP* cnst, KnowledgeConstruction* kc, char* parent) {
 			open();
 			addFields(cnst, kc, parent);
 			close();
@@ -185,7 +185,7 @@ class CLIPSConstantFloatingPointBuilder : public CLIPSConstantBuilder {
 class CLIPSConstantIntegerBuilder : public CLIPSConstantBuilder {
    public:
       CLIPSConstantIntegerBuilder(std::string nm, FunctionNamer& namer) : CLIPSConstantBuilder(nm, "ConstantInteger", namer) { }
-      void addFields(ConstantInt* addr, KnowledgeConstruction &kc, char* parent) {
+      void addFields(ConstantInt* addr, KnowledgeConstruction* kc, char* parent) {
          CLIPSConstantBuilder::addFields((Constant*)addr, kc, parent); 
          addField("Width", addr->getBitWidth());
          if(addr->isZero()) {
@@ -202,7 +202,7 @@ class CLIPSConstantIntegerBuilder : public CLIPSConstantBuilder {
             }
          }
       }
-		void build(ConstantInt* cnst, KnowledgeConstruction &kc, char* parent) {
+		void build(ConstantInt* cnst, KnowledgeConstruction* kc, char* parent) {
 			open();
 			addFields(cnst, kc, parent);
 			close();
