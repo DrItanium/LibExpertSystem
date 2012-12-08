@@ -37,6 +37,7 @@ namespace {
 		bool makeInstance(char* str);
 		void batchStar(char* str);
 		virtual bool runOnFunction(Function& fn) {
+			clear();
 			return false;
 		}
 	};
