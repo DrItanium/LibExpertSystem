@@ -59,6 +59,7 @@ namespace llvm {
 		void resetInstanceStream() {
 			instanceStream->flush();
 		}
+
 		llvm::DenseMap<PointerAddress, std::string>* getInstances() { return instances; }
 		std::string getInstancesAsString() { return instanceStream->str(); }
 
@@ -70,10 +71,6 @@ namespace llvm {
 		virtual void getAnalysisUsage(AnalysisUsage &Info) const {
 			Info.addRequired<LoopInfo>();
 			Info.addRequired<RegionInfo>();
-			Info.addRequired<FunctionNamer>();
-			//we don't need the environment yet and it's actually smarter to just
-			//wait until the custom pass so that the programmer has complete
-			//control over the code
 		}
 		//TODO: add the route commands
 		void addToInstanceStream(std::string &instance);
@@ -103,10 +100,12 @@ namespace llvm {
 			//get the function namer object
 			LoopInfo &loops = getAnalysis<LoopInfo>();
 			RegionInfo &regions = getAnalysis<RegionInfo>();
-			FunctionNamer &namer = getAnalysis<FunctionNamer>();
+			FunctionNamer namer;
 			funcName = (char*)fn.getName().data();
 			llvm::errs() << "Current function is " << funcName << "\n";
 			namer.reset();
+			std::string tmp("nil");
+			namer.tryRegisterPointerToName(0L, tmp);
 			instances->clear();
 			updateFunctionContents(fn, namer);
 			route(loops, namer, funcName);

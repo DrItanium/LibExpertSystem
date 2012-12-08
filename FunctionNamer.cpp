@@ -110,6 +110,6 @@ PointerAddress FunctionNamer::registerInstructionWithBasicBlock(std::string name
    return tmp;
 }
 
-char FunctionNamer::ID = 0;
-static RegisterPass<FunctionNamer> fnNamer("function-namer", "Function Namer for Expert System", false, true);
-INITIALIZE_PASS(FunctionNamer, "function-namer" , "Function Namer for Expert System", false, true)
+//char FunctionNamer::ID = 0;
+//static RegisterPass<FunctionNamer> fnNamer("function-namer", "Function Namer for Expert System", false, true);
+//INITIALIZE_PASS(FunctionNamer, "function-namer" , "Function Namer for Expert System", false, true)
