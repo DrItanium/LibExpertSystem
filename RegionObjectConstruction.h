@@ -10,10 +10,10 @@ extern "C" {
 class CLIPSRegionBuilder : public CLIPSObjectBuilder {
 	public:
 		CLIPSRegionBuilder(std::string nm, FunctionNamer& namer) : CLIPSObjectBuilder(nm, "Region", namer) { }
-		void addFields(Region* region, char* parent) {
+		void addFields(Region* region, KnowledgeConstruction* kc, char* parent) {
 			//we should edit the parent to be a loop if it turns out that we
 			//are part of a loop
-			CLIPSObjectBuilder::addFields((PointerAddress)region, parent);
+			CLIPSObjectBuilder::addFields((PointerAddress)region, kc, parent);
 			addField("Depth", region->getDepth());
 			if(region->isTopLevelRegion()) addTrueField("IsTopLevelRegion");
 			if(region->isSimple()) addTrueField("IsSimple");
@@ -29,14 +29,20 @@ class CLIPSRegionBuilder : public CLIPSObjectBuilder {
 				RegionNode* rn = *i;
 				if(!rn->isSubRegion()) {
 					BasicBlock* bb = rn->getEntry(); 
-               appendValue(Route(bb, name, namer));
+               appendValue(kc->route(bb, name, namer));
 				} else {
 					Region* subRegion = rn->getNodeAs<Region>();
-               appendValue(Route(subRegion, name, namer));
+               appendValue(kc->route(subRegion, name, namer));
 				}
          }
          closeField();
-
+		}
+		void build(Region* r, KnowledgeConstruction* kc, char* parent) {
+			open();
+			addFields(r, kc, parent);
+			close();
+			std::string str = getCompletedString();
+			kc->addToKnowledgeBase((PointerAddress)r, str);
 		}
 };
 
