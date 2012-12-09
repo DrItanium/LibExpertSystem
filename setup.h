@@ -161,7 +161,7 @@
 /************************************************/
 
 #ifndef DEFMODULE_CONSTRUCT
-#define DEFMODULE_CONSTRUCT 0
+#define DEFMODULE_CONSTRUCT 1
 #endif
 
 /****************************************************/
@@ -492,7 +492,7 @@
 /********************************************/
 
 #ifndef DEVELOPER
-#define DEVELOPER 0
+#define DEVELOPER 1
 #endif
 
 #if DEVELOPER
