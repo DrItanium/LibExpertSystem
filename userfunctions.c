@@ -70,6 +70,7 @@ void UserFunctions()
 #if WIN_BTC
 #pragma argsused
 #endif
+extern int OrEqFunction(void* theEnv);
 typedef long long PointerAddress;
 void EnvUserFunctions(
       void *theEnv)
@@ -89,8 +90,8 @@ void EnvUserFunctions(
    extern void* ScheduleInstructions(void *theEnv);
    extern void* ReplaceUsesOf(void *theEnv);
    extern void* ReplaceAllUsesOf(void *theEnv);
-	extern void* UnlinkInstruction(void* theEnv);
-	extern void* DeleteInstruction(void* theEnv);
+   extern void* UnlinkInstruction(void* theEnv);
+   extern void* DeleteInstruction(void* theEnv);
 
    EnvDefineFunction(theEnv, "llvm-print",'v', PTIEF LLVMPrint, "LLVMPrint");
    EnvDefineFunction(theEnv, "batch-load",'v', PTIEF BatchLoad, "BatchLoad");
@@ -109,11 +110,50 @@ void EnvUserFunctions(
    EnvDefineFunction(theEnv, "llvm-unlink-instruction", 'w', PTIEF UnlinkInstruction, "UnlinkInstruction");
    EnvDefineFunction(theEnv, "llvm-delete-instruction", 'w', PTIEF DeleteInstruction, "DeleteInstruction");
    EnvDefineFunction(theEnv, "llvm-schedule-block", 'w', PTIEF ScheduleInstructions, "ScheduleInstructions");
-	SetupLLVMIORouter(theEnv);
-
+   EnvDefineFunction2(theEnv, "or-eq", 'b', PTIEF OrEqFunction, "OrEqFunction", "3*");
+   SetupLLVMIORouter(theEnv);
 
 #if MAC_MCW || WIN_MCW || MAC_XCD
 #pragma unused(theEnv)
 #endif
+}
+
+/* The objective of this function is to provide the equivalent of
+ * (or (eq ...)
+ *     (eq ...)
+ *     ...)
+ * This is very slow because of the nesting to let's cut out the middle man.
+ */
+int OrEqFunction(void* theEnv) {
+   //code taken partially from the EqFunction in prdctfun.c
+   DATA_OBJECT item, nextItem;
+   int numArgs, i;
+   struct expr *theExpression; 
+
+   numArgs = EnvRtnArgCount(theEnv);
+   if(numArgs == 0) {
+      return FALSE;
+   }
+   theExpression = GetFirstArgument();
+   //evaluate the first argument and get a DATA_OBJECT out
+   EvaluateExpression(theEnv, theExpression, &item);
+
+   theExpression = GetNextArgument(theExpression);
+   for(i = 2; i <= numArgs; ++i) {
+      EvaluateExpression(theEnv, theExpression, &nextItem);
+      if((GetType(nextItem) == GetType(item))) {
+         if((GetType(nextItem) == MULTIFIELD)) {
+            if(MultifieldDOsEqual(&nextItem, &item)) {
+               return TRUE;
+            }
+         } else {
+            if(nextItem.value == item.value) {
+               return TRUE;
+            }
+         }
+      }
+      theExpression = GetNextArgument(theExpression);
+   }
+   return FALSE;
 }
 
